@@ -7,17 +7,17 @@ var Pontoon = (function (my) {
      *
      * type - if specified, function returns value for this filter type otherwise for all types
      */
-    getFilter: function(type) {
+    getFilter: function (type) {
       return type ? $('#filter').data('current-filter')[type] : $('#filter').data('current-filter');
     },
 
 
-    getSearch: function() {
+    getSearch: function () {
       return $('#search').val();
     },
 
 
-    setSearch: function(value) {
+    setSearch: function (value) {
       $('#search').val(value);
     },
 
@@ -27,7 +27,7 @@ var Pontoon = (function (my) {
      *  - users are not logged in or
      *  - the entity is read-only.
      */
-    isReadonlyEditor: function() {
+    isReadonlyEditor: function () {
       var entity = this.getEditorEntity();
       if (!this.user.id || entity.readonly) {
         return true;
@@ -60,16 +60,16 @@ var Pontoon = (function (my) {
 
       var classNames = ['entity', status];
       if (translation.pk && !translation.rejected) {
-          classNames.push('has-translations');
+        classNames.push('has-translations');
       }
       if (!entity.body) {
-          classNames.push('uneditable');
+        classNames.push('uneditable');
       }
       if (this.allEntitiesSelected) {
-          classNames.push('selected');
+        classNames.push('selected');
       }
       if (entity.visible) {
-          classNames.push('visible');
+        classNames.push('visible');
       }
 
       var li = $('<li class="' +
@@ -77,10 +77,10 @@ var Pontoon = (function (my) {
         '" data-entry-pk="' + entity.pk + '">' +
         '<span class="status fa' + ((!entity.readonly && self.user.canTranslate()) ? '' : ' unselectable') + '"></span>' +
         '<p class="string-wrapper">' +
-          '<span class="source-string">' + sourceString + '</span>' +
-          '<span class="translation-string' + openSans + '" dir="' + self.locale.direction + '" lang="' + self.locale.code + '" data-script="' + self.locale.script + '">' +
-            translationString +
-          '</span>' +
+        '<span class="source-string">' + sourceString + '</span>' +
+        '<span class="translation-string' + openSans + '" dir="' + self.locale.direction + '" lang="' + self.locale.code + '" data-script="' + self.locale.script + '">' +
+        translationString +
+        '</span>' +
         '</p>' +
         '<span class="arrow fa fa-chevron-right fa-lg"></span>' +
         '</li>', self.app.win);
@@ -133,7 +133,7 @@ var Pontoon = (function (my) {
     /*
      * Hides all previously loaded entities
      */
-    hideEntities: function() {
+    hideEntities: function () {
       $('#entitylist .entity').hide();
       this.setNotOnPage();
     },
@@ -153,12 +153,12 @@ var Pontoon = (function (my) {
      */
     getOtherLocales: function (entity) {
       var self = this,
-          list = $('#helpers .other-locales ul').empty(),
-          tab = $('#helpers a[href="#other-locales"]'),
-          count = '',
-          preferred = 0,
-          remaining = 0,
-          localesOrder = self.user.localesOrder;
+        list = $('#helpers .other-locales ul').empty(),
+        tab = $('#helpers a[href="#other-locales"]'),
+        count = '',
+        preferred = 0,
+        remaining = 0,
+        localesOrder = self.user.localesOrder;
 
       self.NProgressUnbind();
 
@@ -172,28 +172,28 @@ var Pontoon = (function (my) {
           entity: entity.pk,
           locale: self.locale.code
         },
-        success: function(data) {
+        success: function (data) {
           if (data.length) {
-            $.each(data, function() {
+            $.each(data, function () {
               var translationString = self.fluent.getSimplePreview(this.string),
-              link = self.getResourceLink(
-                    this.locale__code,
-                    self.project.slug,
-                    self.part,
-                    entity.pk
-                  );
+                link = self.getResourceLink(
+                  this.locale__code,
+                  self.project.slug,
+                  self.part,
+                  entity.pk
+                );
 
               list.append('<li class="suggestion" title="Copy Into Translation (Tab)">' +
                 '<header>' +
-                  '<a href="' + link + '" title="" target="_blank">' + this.locale__name + '<span class="stress">' + this.locale__code + '</span></a>' +
+                '<a href="' + link + '" title="" target="_blank">' + this.locale__name + '<span class="stress">' + this.locale__code + '</span></a>' +
                 '</header>' +
                 '<p class="translation" dir="' + this.locale__direction + '" lang="' + this.locale__code + '" data-script="' + this.locale__script + '">' +
-                  self.markPlaceables(translationString) +
+                self.markPlaceables(translationString) +
                 '</p>' +
                 '<p class="translation-clipboard">' +
-                  self.doNotRender(this.string) +
+                self.doNotRender(this.string) +
                 '</p>' +
-              '</li>');
+                '</li>');
 
               if (!$.isEmptyObject(localesOrder) && localesOrder.indexOf(this.locale__code) > -1) {
                 preferred += 1;
@@ -204,24 +204,24 @@ var Pontoon = (function (my) {
             remaining = count - preferred;
 
             if (!$.isEmptyObject(localesOrder)) {
-              var sortedItems = list.find('li').sort(function(a, b) {
-                 var localeA = $(a).find('p').prop('lang'),
-                     localeB = $(b).find('p').prop('lang');
+              var sortedItems = list.find('li').sort(function (a, b) {
+                var localeA = $(a).find('p').prop('lang'),
+                  localeB = $(b).find('p').prop('lang');
 
-                 var valA = localesOrder.indexOf(localeA),
-                     valB = localesOrder.indexOf(localeB);
+                var valA = localesOrder.indexOf(localeA),
+                  valB = localesOrder.indexOf(localeB);
 
-                 return (valA === -1 && valB === -1 ) ? localeA > localeB : (valA < valB) ? 1 : (valA > valB) ? -1 : 0;
+                return (valA === -1 && valB === -1) ? localeA > localeB : (valA < valB) ? 1 : (valA > valB) ? -1 : 0;
               });
 
               list.children('li').remove();
 
-              sortedItems.each(function() {
+              sortedItems.each(function () {
                 list.append(this);
               });
 
               if (preferred > 0 && remaining > 0) {
-                list.find('li:eq(' + (preferred-1) + ')').addClass('preferred');
+                list.find('li:eq(' + (preferred - 1) + ')').addClass('preferred');
               }
             }
 
@@ -229,7 +229,7 @@ var Pontoon = (function (my) {
             list.append('<li class="disabled"><p>No translations available.</p></li>');
           }
         },
-        error: function(error) {
+        error: function (error) {
           if (error.status === 0 && error.statusText !== "abort") {
             // Allows requesting locales again
             editor.otherLocales = null;
@@ -238,13 +238,13 @@ var Pontoon = (function (my) {
             list.append('<li class="disabled"><p>No translations available.</p></li>');
           }
         },
-        complete: function() {
+        complete: function () {
           tab
             .find('.count')
-              .find('.preferred').html(preferred).toggle(preferred > 0).end()
-              .find('.plus').html('+').toggle(preferred > 0 && remaining > 0).end()
-              .find('.remaining').html(remaining).toggle(remaining > 0).end()
-              .toggle(count !== '');
+            .find('.preferred').html(preferred).toggle(preferred > 0).end()
+            .find('.plus').html('+').toggle(preferred > 0 && remaining > 0).end()
+            .find('.remaining').html(remaining).toggle(remaining > 0).end()
+            .toggle(count !== '');
         }
       });
 
@@ -266,7 +266,7 @@ var Pontoon = (function (my) {
     },
 
 
-    getApproveButtonTitle: function(translation) {
+    getApproveButtonTitle: function (translation) {
       if (translation.approved && translation.approved_user) {
         return 'Approved by ' + translation.approved_user;
       } else {
@@ -287,9 +287,9 @@ var Pontoon = (function (my) {
      */
     getHistory: function (entity) {
       var self = this,
-          list = $('#helpers .history ul').empty(),
-          tab = $('#helpers a[href="#history"]'),
-          count = '';
+        list = $('#helpers .history ul').empty(),
+        tab = $('#helpers a[href="#history"]'),
+        count = '';
 
       self.NProgressUnbind();
 
@@ -304,45 +304,45 @@ var Pontoon = (function (my) {
           locale: self.locale.code,
           plural_form: self.getPluralForm()
         },
-        success: function(data) {
+        success: function (data) {
           if (data.length) {
-            $.each(data, function(i) {
+            $.each(data, function (i) {
               var baseString = self.fluent.getSimplePreview(data[0].string),
-                  translationString = self.fluent.getSimplePreview(this.string);
+                translationString = self.fluent.getSimplePreview(this.string);
 
               list.append(
                 '<li data-id="' + this.pk + '" class="suggestion ' +
                 (this.approved ? 'translated' : this.rejected ? 'rejected' : this.fuzzy ? 'fuzzy' : 'unreviewed') +
                 '" title="Copy Into Translation (Tab)">' +
-                  '<header class="clearfix' +
-                    ((!entity.readonly && self.user.canTranslate()) ? ' translator' :
-                      ((!entity.readonly && self.user.id && self.user.id === this.uid && !this.approved) ?
-                        ' own' : '')) +
-                    '">' +
-                    '<div class="info">' +
-                      ((!this.uid) ? '<span>' + this.user + '</span>' :
-                        '<a href="/contributors/' + this.username + '" title="' + self.getApproveButtonTitle(this) + '" target="_blank">' + this.user + '</a>') +
-                      '<time dir="ltr" class="stress" datetime="' + this.date_iso + '">' + this.date + ' UTC</time>' +
-                    '</div>' +
-                    '<menu class="toolbar">' +
-                      ((i > 0) ? '<a href="#" class="toggle-diff" data-alternative-text="Hide diff" title="Show diff against the currently active translation">Show diff</a>' : '') +
-                      '<button class="delete far" title="Delete"></button>' +
-                      '<button class="' + (this.approved ? 'unapprove' : 'approve') + ' fa" title="' +
-                       (this.approved ? 'Unapprove' : 'Approve')  + '"></button>' +
-                      '<button class="' +
-                       (this.rejected ? 'unreject' : 'reject') + ' fa" title="' +
-                       (this.rejected ? 'Unreject' : 'Reject') + '"></button>' +
-                    '</menu>' +
-                  '</header>' +
-                  '<p class="translation" dir="' + self.locale.direction + '" lang="' + self.locale.code + '" data-script="' + self.locale.script + '">' +
-                    self.markPlaceables(translationString) +
-                  '</p>' +
-                  '<p class="translation-diff" dir="' + self.locale.direction + '" lang="' + self.locale.code + '" data-script="' + self.locale.script + '">' +
-                    ((i > 0) ? self.diff(baseString, translationString) : self.markPlaceables(translationString)) +
-                  '</p>' +
-                  '<p class="translation-clipboard">' +
-                    self.doNotRender(this.string) +
-                  '</p>' +
+                '<header class="clearfix' +
+                ((!entity.readonly && self.user.canTranslate()) ? ' translator' :
+                  ((!entity.readonly && self.user.id && self.user.id === this.uid && !this.approved) ?
+                    ' own' : '')) +
+                '">' +
+                '<div class="info">' +
+                ((!this.uid) ? '<span>' + this.user + '</span>' :
+                  '<a href="/contributors/' + this.username + '" title="' + self.getApproveButtonTitle(this) + '" target="_blank">' + this.user + '</a>') +
+                '<time dir="ltr" class="stress" datetime="' + this.date_iso + '">' + this.date + ' UTC</time>' +
+                '</div>' +
+                '<menu class="toolbar">' +
+                ((i > 0) ? '<a href="#" class="toggle-diff" data-alternative-text="Hide diff" title="Show diff against the currently active translation">Show diff</a>' : '') +
+                '<button class="delete far" title="Delete"></button>' +
+                '<button class="' + (this.approved ? 'unapprove' : 'approve') + ' fa" title="' +
+                (this.approved ? 'Unapprove' : 'Approve') + '"></button>' +
+                '<button class="' +
+                (this.rejected ? 'unreject' : 'reject') + ' fa" title="' +
+                (this.rejected ? 'Unreject' : 'Reject') + '"></button>' +
+                '</menu>' +
+                '</header>' +
+                '<p class="translation" dir="' + self.locale.direction + '" lang="' + self.locale.code + '" data-script="' + self.locale.script + '">' +
+                self.markPlaceables(translationString) +
+                '</p>' +
+                '<p class="translation-diff" dir="' + self.locale.direction + '" lang="' + self.locale.code + '" data-script="' + self.locale.script + '">' +
+                ((i > 0) ? self.diff(baseString, translationString) : self.markPlaceables(translationString)) +
+                '</p>' +
+                '<p class="translation-clipboard">' +
+                self.doNotRender(this.string) +
+                '</p>' +
                 '</li>');
             });
 
@@ -353,12 +353,12 @@ var Pontoon = (function (my) {
             list.append('<li class="disabled"><p>No translations available.</p></li>');
           }
         },
-        error: function(error) {
+        error: function (error) {
           if (error.status === 0 && error.statusText !== "abort") {
             self.noConnectionError(list);
           }
         },
-        complete: function() {
+        complete: function () {
           tab.find('.count').html(count).toggle(count !== '');
         }
       });
@@ -372,7 +372,7 @@ var Pontoon = (function (my) {
      */
     updateHelpers: function () {
       var entity = this.getEditorEntity(),
-          source = this.fluent.getSimplePreview(entity['original' + this.getPluralSuffix()]);
+        source = this.fluent.getSimplePreview(entity['original' + this.getPluralSuffix()]);
 
       this.getHistory(entity);
 
@@ -385,7 +385,7 @@ var Pontoon = (function (my) {
       }
 
       var tab = $("#helpers nav .active a"),
-          section = tab.attr('href').substr(1);
+        section = tab.attr('href').substr(1);
 
       $('#helpers section.' + section + ':hidden').show();
     },
@@ -407,8 +407,8 @@ var Pontoon = (function (my) {
 
       $('#metadata').append(
         '<p class="' + className + '">' +
-          '<span class="title">' + title + '</span> ' +
-          '<span class="content">' + text + '</span>' +
+        '<span class="title">' + title + '</span> ' +
+        '<span class="content">' + text + '</span>' +
         '</p>');
     },
 
@@ -416,9 +416,9 @@ var Pontoon = (function (my) {
     /**
      * Jump to a part without reloading the whole UI
      */
-    jumpToPart: function(part) {
+    jumpToPart: function (part) {
       var self = this;
-      self.checkUnsavedChanges(function() {
+      self.checkUnsavedChanges(function () {
         $('.part .selector').attr('title', part);
 
         self.updateCurrentPart(part);
@@ -439,8 +439,8 @@ var Pontoon = (function (my) {
     /*
      * Return a link to resource from a set of given parameters.
      */
-    getResourceLink: function(localeCode, projectSlug, resourcePath, entityId) {
-      var link = '/' + localeCode + '/' +  projectSlug + '/' + resourcePath + '/';
+    getResourceLink: function (localeCode, projectSlug, resourcePath, entityId) {
+      var link = '/' + localeCode + '/' + projectSlug + '/' + resourcePath + '/';
 
       if (entityId) {
         link += '?string=' + entityId;
@@ -466,11 +466,11 @@ var Pontoon = (function (my) {
      */
     updateCurrentTranslationLength: function () {
       var limit = this.translationLengthLimit,
-          translation = $('#editor textarea:visible:first').val() || '';
+        translation = $('#editor textarea:visible:first').val() || '';
 
       if (limit) {
         var length = this.stripHTML(translation).length,
-            charactersLeft = limit - length;
+          charactersLeft = limit - length;
 
         $('#translation-length .characters-left')
           .toggleClass('overflow', charactersLeft < 0)
@@ -519,7 +519,7 @@ var Pontoon = (function (my) {
     openBatchEditor: function (loading) {
       var self = this;
 
-      self.checkUnsavedChanges(function() {
+      self.checkUnsavedChanges(function () {
         $('#sidebar').addClass('batch');
 
         loading = loading || false;
@@ -529,7 +529,7 @@ var Pontoon = (function (my) {
 
         $('#batch')
           .find('button').removeClass('loading confirmed show-message')
-            .find('.message').html('');
+          .find('.message').html('');
       });
     },
 
@@ -563,7 +563,7 @@ var Pontoon = (function (my) {
       }
 
       // Update plural tabs
-      $.each(cldr_plurals, function(i) {
+      $.each(cldr_plurals, function (i) {
         $('#plural-tabs li:eq(' + i + ') a')
           .find('span').html(this).end()
           .find('sup').html(self.locale.plural_examples[this]);
@@ -590,7 +590,7 @@ var Pontoon = (function (my) {
       if (entity.comment) {
         // Translation length limit
         var split = entity.comment.split('\n'),
-            splitComment = entity.comment;
+          splitComment = entity.comment;
         if (split[0].startsWith('MAX_LENGTH')) {
           try {
             self.translationLengthLimit = parseInt(split[0].split('MAX_LENGTH: ')[1].split(' ')[0], 10);
@@ -604,11 +604,11 @@ var Pontoon = (function (my) {
         self.appendMetaData('Comment', comment);
 
         // Screenshot
-        $('#metadata').find('a').each(function() {
+        $('#metadata').find('a').each(function () {
           var url = $(this).html();
           if (/(https?:\/\/.*\.(?:png|jpg))/im.test(url)) {
             var localURL = url.replace(/en-US\//gi, self.locale.code + '/');
-            $('#screenshots').append('<img src="'+ localURL +'" alt="Screenshot">');
+            $('#screenshots').append('<img src="' + localURL + '" alt="Screenshot">');
             $('#source-pane').addClass('screenshots');
           }
         });
@@ -629,15 +629,15 @@ var Pontoon = (function (my) {
       if (entity.source) {
         // PO
         if (Array.isArray(entity.source)) {
-          $.each(entity.source, function() {
+          $.each(entity.source, function () {
             if (Array.isArray(this)) {
               self.appendMetaData('#:', this.join(':'));
             }
           });
-        // JSON
-        } else if (typeof(entity.source) === 'object') {
+          // JSON
+        } else if (typeof (entity.source) === 'object') {
           var examples = [];
-          $.each(Object.keys(entity.source), function() {
+          $.each(Object.keys(entity.source), function () {
             var example = entity.source[this].example;
             if (example) {
               examples.push('$' + this.toUpperCase() + '$: ' + example);
@@ -654,7 +654,7 @@ var Pontoon = (function (my) {
       // Metadata: path
       if (entity.path) {
         var link = null,
-            linkClass = null;
+          linkClass = null;
 
         // Resources can be mapped into multiple subpages.
         if (!entity.project.url) {
@@ -673,7 +673,7 @@ var Pontoon = (function (my) {
       }
 
       // Metadata: project
-      var projectLink = '/' + self.locale.code + '/' +  entity.project.slug + '/';
+      var projectLink = '/' + self.locale.code + '/' + entity.project.slug + '/';
       self.appendMetaData('Project', entity.project.name, projectLink);
 
       // Original string and plurals
@@ -689,7 +689,7 @@ var Pontoon = (function (my) {
           $('#plural-tabs li:lt(' + nplurals + ')').css('display', 'table-cell');
           $('#plural-tabs li:first a').click();
 
-        // Show plural string to locales with a single plural form (includes variable identifier)
+          // Show plural string to locales with a single plural form (includes variable identifier)
         } else {
           $('#source-pane h2').html('Plural').show();
           $('#original').html(entity.marked_plural);
@@ -745,7 +745,7 @@ var Pontoon = (function (my) {
 
       // Toggle read-only mode
       $('#editor #single').toggleClass('readonly', entity.readonly);
-      $('#editor textarea').attr('readonly', function() {
+      $('#editor textarea').attr('readonly', function () {
         return self.isReadonlyEditor();
       });
 
@@ -816,7 +816,7 @@ var Pontoon = (function (my) {
       }
 
       var before = this.cachedTranslation,
-          after = this.fluent.getFTLEditorContentsAsSource();
+        after = this.fluent.getFTLEditorContentsAsSource();
 
       if ((before !== null) && (before !== after)) {
         $('#unsaved').show();
@@ -863,10 +863,10 @@ var Pontoon = (function (my) {
      */
     navigateToEntity: function (type) {
       var entitySelector = '#entitylist .entity:visible',
-          index = this.getEditorEntity().ui.index(entitySelector),
-          step = type === 'next' ? 1 : -1,
-          fallback = type === 'next' ? ':first' : ':last',
-          newEntity = $(entitySelector).eq(index + step);
+        index = this.getEditorEntity().ui.index(entitySelector),
+        step = type === 'next' ? 1 : -1,
+        fallback = type === 'next' ? ':first' : ':last',
+        newEntity = $(entitySelector).eq(index + step);
 
       if (newEntity.length === 0) {
         newEntity = $(entitySelector + fallback);
@@ -884,7 +884,7 @@ var Pontoon = (function (my) {
     switchToEntity: function (newEntity) {
       var self = this;
 
-      self.checkUnsavedChanges(function() {
+      self.checkUnsavedChanges(function () {
         // We must hide batch editor first in order to display FTL editor properly
         self.clearSelection();
 
@@ -949,27 +949,27 @@ var Pontoon = (function (my) {
       // Select multiple entities if holding Shift
       if (event.shiftKey && self.lastSelectedEntity) {
         var entities = $('#entitylist .entity'),
-            start = entities.index(entity),
-            end = entities.index(self.lastSelectedEntity);
+          start = entities.index(entity),
+          end = entities.index(self.lastSelectedEntity);
 
         entities
           .slice(Math.min(start, end), Math.max(start, end) + 1)
-            .toggleClass('selected', entity.is('.selected'));
+          .toggleClass('selected', entity.is('.selected'));
       }
 
       $('#entitylist .hovered').removeClass('hovered');
 
       // Update selected entities
       if (self.allEntitiesSelected) {
-        $('#entitylist .entity:not(".selected")').each(function() {
+        $('#entitylist .entity:not(".selected")').each(function () {
           var index = self.selectedEntities.indexOf(this.entity.pk);
           if (index !== -1) {
             self.selectedEntities.splice(index, 1);
           }
         });
-        $('#entitylist .entity.selected').each(function() {
+        $('#entitylist .entity.selected').each(function () {
           var pk = this.entity.pk,
-              index = self.selectedEntities.indexOf(pk);
+            index = self.selectedEntities.indexOf(pk);
           if (index === -1) {
             self.selectedEntities.push(pk);
           }
@@ -983,7 +983,7 @@ var Pontoon = (function (my) {
       if (self.selectedEntities.length > 0) {
         self.openBatchEditor();
 
-      // If not, open regular editor
+        // If not, open regular editor
       } else {
         if (self.app.advanced) {
           entity.addClass('hovered');
@@ -1000,19 +1000,19 @@ var Pontoon = (function (my) {
     /*
      * Start/Stop costumizing time range
      */
-    toggleRangeEditing: function() {
+    toggleRangeEditing: function () {
       var editing = $('.for-time-range .edit').is('.editing');
       $('#range-picker').toggle(!editing);
 
       $('#filter .time-range')
         .toggleClass('editing', !editing)
-        .find('input').each(function() {
+        .find('input').each(function () {
           $(this).prop('disabled', editing);
         });
 
       var $toggle = $('#filter .horizontal-separator .edit'),
-          newTitle = $toggle.data('alternative'),
-          oldTitle = $toggle.html();
+        newTitle = $toggle.data('alternative'),
+        oldTitle = $toggle.html();
 
       $toggle
         .html(newTitle)
@@ -1026,7 +1026,7 @@ var Pontoon = (function (my) {
     /*
      * Reverse day and month order
      */
-    reverseDayMonth: function(date) {
+    reverseDayMonth: function (date) {
       var split = date.split('/');
       return split[1] + '/' + split[0] + '/' + split[2];
     },
@@ -1035,19 +1035,19 @@ var Pontoon = (function (my) {
     /*
      * Convert server time to local format
      */
-    server2local: function(d) {
+    server2local: function (d) {
       return ('0' + d.getDate()).slice(-2) + '/' +
-      ('0' + (d.getMonth() + 1)).slice(-2) + '/' +
-      d.getFullYear() + " " +
-      ('0' + d.getHours()).slice(-2) + ":" +
-      ('0' + d.getMinutes()).slice(-2);
+        ('0' + (d.getMonth() + 1)).slice(-2) + '/' +
+        d.getFullYear() + " " +
+        ('0' + d.getHours()).slice(-2) + ":" +
+        ('0' + d.getMinutes()).slice(-2);
     },
 
 
     /*
      * Convert local time to to server format and time zone (UTC)
      */
-    local2server: function(local) {
+    local2server: function (local) {
       var reverse = this.reverseDayMonth(local);
 
       try {
@@ -1062,7 +1062,7 @@ var Pontoon = (function (my) {
     /*
      * Convert local time to chart format (Epoch) and time zone (UTC)
      */
-    local2chart: function(local) {
+    local2chart: function (local) {
       var reverse = this.reverseDayMonth(local);
       return new Date(reverse).getTime();
     },
@@ -1071,7 +1071,7 @@ var Pontoon = (function (my) {
     /*
      * Initialize Time Range selector chart
      */
-    updateRangePicker: function(counts) {
+    updateRangePicker: function (counts) {
       $('#filter').find('.time-range, .for-time-range').toggle(counts.length > 0);
 
       if (counts.length === 0) {
@@ -1082,7 +1082,7 @@ var Pontoon = (function (my) {
 
       if (!$('#from').val() || !$('#to').val()) {
         var from = counts[0][0],
-            to = counts[counts.length - 1][0];
+          to = counts[counts.length - 1][0];
 
         $('#from').val(Highcharts.dateFormat('%d/%m/%Y %H:%M', from));
         $('#to').val(Highcharts.dateFormat('%d/%m/%Y %H:%M', to));
@@ -1091,9 +1091,9 @@ var Pontoon = (function (my) {
       // Render range selector
       Highcharts.setOptions({
         global: {
-            useUTC: false
+          useUTC: false
         },
-        lang:{
+        lang: {
           rangeSelectorZoom: ''
         }
       });
@@ -1107,8 +1107,8 @@ var Pontoon = (function (my) {
           enabled: false
         },
 
-        scrollbar : {
-          enabled : false
+        scrollbar: {
+          enabled: false
         },
 
         tooltip: {
@@ -1128,7 +1128,7 @@ var Pontoon = (function (my) {
 
         xAxis: {
           lineWidth: 0,
-          tickLength : 0,
+          tickLength: 0,
           labels: {
             enabled: false
           },
@@ -1233,7 +1233,7 @@ var Pontoon = (function (my) {
 
         series: [{
           type: 'column',
-            data: counts
+          data: counts
         }]
       });
     },
@@ -1242,7 +1242,7 @@ var Pontoon = (function (my) {
     /*
      * Return empty filter object
      */
-    getEmptyFilterObject: function() {
+    getEmptyFilterObject: function () {
       return {
         status: [],
         extra: [],
@@ -1256,10 +1256,10 @@ var Pontoon = (function (my) {
     /*
      * Make sure filter toolbar is always visible
      */
-    positionFilterToolbar: function() {
+    positionFilterToolbar: function () {
       var menu = $('#filter .menu'),
-          scrollbarVisible = menu[0].scrollHeight > (menu.height()),
-          toolbarVisible = $('#filter .selected').length > 0;
+        scrollbarVisible = menu[0].scrollHeight > (menu.height()),
+        toolbarVisible = $('#filter .selected').length > 0;
 
       $('#filter').toggleClass('fixed', scrollbarVisible && toolbarVisible);
     },
@@ -1270,12 +1270,12 @@ var Pontoon = (function (my) {
      *
      * filter: object with properties for each filter type
      */
-    updateFilterUI: function(filter) {
+    updateFilterUI: function (filter) {
       filter = filter || this.getFilter();
 
       var placeholder = [],
-          selectorType = 'all',
-          self = this;
+        selectorType = 'all',
+        self = this;
 
       $('#filter').data('current-filter', filter);
 
@@ -1283,9 +1283,9 @@ var Pontoon = (function (my) {
       this.clearSelectedFilters();
 
       function markSelectedFilters(type) {
-        for (var i=0, l=filter[type].length; i < l; i++) {
+        for (var i = 0, l = filter[type].length; i < l; i++) {
           var node = $('#filter .menu [data-type="' + filter[type][i] + '"]'),
-              title = node.find('.title').text();
+            title = node.find('.title').text();
 
           node.addClass('selected');
 
@@ -1297,9 +1297,9 @@ var Pontoon = (function (my) {
       }
 
       function markTagFilters(type) {
-        for (var i=0, l=filter[type].length; i < l; i++) {
+        for (var i = 0, l = filter[type].length; i < l; i++) {
           var node = $('#filter .menu [data-type="' + filter[type][i] + '"]'),
-              titleNode = node.find('.title');
+            titleNode = node.find('.title');
           node.addClass('selected');
           placeholder.push('tag: "' + titleNode.text() + '"');
         }
@@ -1356,9 +1356,9 @@ var Pontoon = (function (my) {
     /*
      * Validate Time range input field
      */
-    validateTimeRangeInput: function() {
+    validateTimeRangeInput: function () {
       var from = this.local2server($('#from').val()),
-          to = this.local2server($('#to').val());
+        to = this.local2server($('#to').val());
 
       if (from && to) {
         return from + '-' + to;
@@ -1412,7 +1412,7 @@ var Pontoon = (function (my) {
     /*
      * Clear selected filters
      */
-    clearSelectedFilters: function() {
+    clearSelectedFilters: function () {
       $('#filter .selected').removeClass('selected');
     },
 
@@ -1420,7 +1420,7 @@ var Pontoon = (function (my) {
     /*
      * Apply selected filters
      */
-    applySelectedFilters: function() {
+    applySelectedFilters: function () {
       this.searchEntities();
       $('#filter .selector').click();
     },
@@ -1429,7 +1429,7 @@ var Pontoon = (function (my) {
     /*
      * Return an array of untranslated filter statuses
      */
-    getUntranslatedFilters: function() {
+    getUntranslatedFilters: function () {
       return ['missing', 'fuzzy', 'errors'];
     },
 
@@ -1437,9 +1437,9 @@ var Pontoon = (function (my) {
     /*
      * Apply untranslated filter
      */
-    applyUntranslatedFilter: function(status) {
+    applyUntranslatedFilter: function (status) {
       var values = this.getUntranslatedFilters();
-      for (var i=0, l=values.length; i<l; i++) {
+      for (var i = 0, l = values.length; i < l; i++) {
         if (status.indexOf(values[i]) === -1) {
           status.push(values[i]);
         }
@@ -1450,9 +1450,9 @@ var Pontoon = (function (my) {
     /*
      * Check if untranslated filter applied
      */
-    untranslatedFilterApplied: function(status) {
+    untranslatedFilterApplied: function (status) {
       var values = this.getUntranslatedFilters();
-      for (var i=0, l=values.length; i<l; i++) {
+      for (var i = 0, l = values.length; i < l; i++) {
         if (status.indexOf(values[i]) === -1) {
           return false;
         }
@@ -1461,27 +1461,27 @@ var Pontoon = (function (my) {
     },
 
 
-    attachEntityListHandlers: function() {
+    attachEntityListHandlers: function () {
       var self = this;
 
       function isExtraFilter(el) {
         return el.hasClass('untranslated') ||
-               el.hasClass('unchanged') ||
-               el.hasClass('rejected');
+          el.hasClass('unchanged') ||
+          el.hasClass('rejected');
       }
 
       function isTagFilter(el) {
-        return Array.from(el[0].classList).some(function(clz) { return clz.startsWith('tag-') });
+        return Array.from(el[0].classList).some(function (clz) { return clz.startsWith('tag-') });
       }
 
       // Filter entities by multiple filters
-      $('#filter').on('click', 'li[data-type]:not(".editing"):not(".all") .status', function(e) {
+      $('#filter').on('click', 'li[data-type]:not(".editing"):not(".all") .status', function (e) {
         e.stopPropagation();
 
         var el = $(this).parents('li'),
-            value = el.data('type'),
-            filter = self.getFilter(),
-            num = -1;
+          value = el.data('type'),
+          filter = self.getFilter(),
+          num = -1;
 
         function updateFilterValue(type) {
           num = filter[type].indexOf(value);
@@ -1522,10 +1522,10 @@ var Pontoon = (function (my) {
       });
 
       // Filter entities by a single filter
-      $('#filter').on('click', 'li[data-type]:not(".editing")', function() {
+      $('#filter').on('click', 'li[data-type]:not(".editing")', function () {
         var el = $(this),
-            value = el.data('type'),
-            filter = self.getEmptyFilterObject();
+          value = el.data('type'),
+          filter = self.getEmptyFilterObject();
 
         if (el.hasClass('time-range')) {
           filter.time = self.validateTimeRangeInput();
@@ -1561,7 +1561,7 @@ var Pontoon = (function (my) {
       });
 
       // Clear selected filters
-      $('#filter .clear-selected').click(function(e) {
+      $('#filter .clear-selected').click(function (e) {
         e.preventDefault();
 
         self.updateFilterUI(self.getEmptyFilterObject());
@@ -1569,14 +1569,14 @@ var Pontoon = (function (my) {
       });
 
       // Apply selected filters
-      $('#filter .apply-selected').click(function(e) {
+      $('#filter .apply-selected').click(function (e) {
         e.preventDefault();
 
         self.applySelectedFilters();
       });
 
       // Update authors and time range
-      $('#filter:not(".opened") .selector').click(function() {
+      $('#filter:not(".opened") .selector').click(function () {
         if ($('#filter').is('.opened')) {
           return;
         }
@@ -1592,7 +1592,7 @@ var Pontoon = (function (my) {
 
         $.ajax({
           url: '/' + self.locale.code + '/' + self.project.slug + '/' + self.part + '/authors-and-time-range/',
-          success: function(data) {
+          success: function (data) {
             self.updateRangePicker(data.counts_per_minute);
             self.updateAuthors(data.authors);
           }
@@ -1602,12 +1602,12 @@ var Pontoon = (function (my) {
       });
 
       // Time range editing toggle
-      $('#filter .horizontal-separator .edit').click(function() {
+      $('#filter .horizontal-separator .edit').click(function () {
         self.toggleRangeEditing();
       });
 
       // Initialize date & time range picker
-      $('#filter .time-range').on('focusin', 'input:not(".hasDatepicker")', function() {
+      $('#filter .time-range').on('focusin', 'input:not(".hasDatepicker")', function () {
         $.timepicker.datetimeRange($('#from'), $('#to'), {
           showTime: false,
           showHour: false,
@@ -1621,9 +1621,9 @@ var Pontoon = (function (my) {
       });
 
       // Clear error styling on value change
-      $('#filter .time-range input').on('input propertychange change', function() {
+      $('#filter .time-range input').on('input propertychange change', function () {
         var from = self.local2chart($('#from').val()),
-            to = self.local2chart($('#to').val());
+          to = self.local2chart($('#to').val());
 
         $('#range-picker').highcharts().xAxis[0].setExtremes(from, to);
         $(this).removeClass('error');
@@ -1659,13 +1659,13 @@ var Pontoon = (function (my) {
       });
 
       // Select entities for batch editing
-      $('#entitylist').on('click', '.entity > .status:not(".unselectable")', function(e) {
+      $('#entitylist').on('click', '.entity > .status:not(".unselectable")', function (e) {
         var entity = $(this).parent('li');
         self.selectEntity(entity, e);
       });
 
       // Edit selected entities from 1-column layout
-      $('#entitylist .batch-bar .edit-all').click(function(e) {
+      $('#entitylist .batch-bar .edit-all').click(function (e) {
         e.preventDefault();
 
         $("#entitylist").css('left', -$('#sidebar').width());
@@ -1673,13 +1673,13 @@ var Pontoon = (function (my) {
       });
 
       // Scroll entities
-      $('#entitylist .wrapper').scroll(function(e) {
+      $('#entitylist .wrapper').scroll(function (e) {
         e.preventDefault();
 
         var $editableEntities = $('#entitylist .wrapper .editables'),
-            $uneditableEntities = $('#entitylist .wrapper .uneditables'),
-            entitiesHeight = $editableEntities.height() + $uneditableEntities.height(),
-            list = $('#entitylist .wrapper');
+          $uneditableEntities = $('#entitylist .wrapper .uneditables'),
+          entitiesHeight = $editableEntities.height() + $uneditableEntities.height(),
+          list = $('#entitylist .wrapper');
 
         // Prevents from firing multiple calls during onscroll event
         if (entitiesHeight > 0 && (list.scrollTop() >= entitiesHeight * 0.75 - list.height()) && self.hasNext && !self.isLoading()) {
@@ -1689,10 +1689,10 @@ var Pontoon = (function (my) {
 
       function mouseMoveHandler(e) {
         var initial = e.data.initial,
-            left = Math.min(Math.max(initial.leftWidth + e.pageX - initial.position, initial.leftMin),
-                   initial.leftWidth + initial.rightWidth - initial.rightMin),
-            right = Math.min(Math.max(initial.rightWidth - e.pageX + initial.position, initial.rightMin),
-                    initial.leftWidth + initial.rightWidth - initial.leftMin);
+          left = Math.min(Math.max(initial.leftWidth + e.pageX - initial.position, initial.leftMin),
+            initial.leftWidth + initial.rightWidth - initial.rightMin),
+          right = Math.min(Math.max(initial.rightWidth - e.pageX + initial.position, initial.rightMin),
+            initial.leftWidth + initial.rightWidth - initial.leftMin);
 
         initial.left.width(left);
         initial.right.width(right).css('left', left);
@@ -1709,16 +1709,16 @@ var Pontoon = (function (my) {
         e.preventDefault();
 
         var left = $('#entitylist'),
-            right = $('#editor'),
-            data = {
-              left: left,
-              right: right,
-              leftWidth: left.outerWidth(),
-              rightWidth: right.outerWidth(),
-              leftMin: 250,
-              rightMin: 350,
-              position: e.pageX
-            };
+          right = $('#editor'),
+          data = {
+            left: left,
+            right: right,
+            leftWidth: left.outerWidth(),
+            rightWidth: right.outerWidth(),
+            leftMin: 250,
+            rightMin: 350,
+            position: e.pageX
+          };
 
         left.css('transition-property', 'none');
         right.css('transition-property', 'none');
@@ -1737,15 +1737,15 @@ var Pontoon = (function (my) {
      */
     getPluralSuffix: function () {
       var original = '',
-          nplurals = this.locale.nplurals,
-          plural_rule = this.locale.plural_rule,
-          pluralForm = this.getPluralForm();
+        nplurals = this.locale.nplurals,
+        plural_rule = this.locale.plural_rule,
+        pluralForm = this.getPluralForm();
 
       if ((nplurals < 2 && $('#source-pane').is('.pluralized')) ||
-          (nplurals === 2 && pluralForm === 1) ||
-          (nplurals > 2 &&
-           pluralForm !== -1 &&
-           pluralForm !== eval(plural_rule.replace(/n/g, 1)))) {
+        (nplurals === 2 && pluralForm === 1) ||
+        (nplurals > 2 &&
+          pluralForm !== -1 &&
+          pluralForm !== eval(plural_rule.replace(/n/g, 1)))) {
         original = '_plural';
       }
 
@@ -1769,8 +1769,8 @@ var Pontoon = (function (my) {
     saveTranslation: function (e) {
       e.preventDefault();
       var self = Pontoon,
-          entity = self.getEditorEntity(),
-          translation = $('#translation').val();
+        entity = self.getEditorEntity(),
+        translation = $('#translation').val();
 
       // Prevent double translation submissions
       $(this).off('click.save');
@@ -1799,7 +1799,7 @@ var Pontoon = (function (my) {
     updateInPlaceTranslation: function (translation) {
       translation = translation || $('#editor textarea:visible:first').val();
       var entity = this.getEditorEntity(),
-          pluralForm = this.getPluralForm(true);
+        pluralForm = this.getPluralForm(true);
 
       if (entity.body && pluralForm === 0 && (this.user.canTranslate() || !entity.translation[pluralForm].approved)) {
         this.postMessage("SAVE", {
@@ -1824,20 +1824,20 @@ var Pontoon = (function (my) {
 
         switch (sec) {
 
-        case 'back':
-          self.checkUnsavedChanges(function() {
-            self.stopInPlaceEditing();
-            self.goBackToEntityList();
-          });
-          break;
+          case 'back':
+            self.checkUnsavedChanges(function () {
+              self.stopInPlaceEditing();
+              self.goBackToEntityList();
+            });
+            break;
 
-        case 'previous':
-          self.navigateToEntity('previous');
-          break;
+          case 'previous':
+            self.navigateToEntity('previous');
+            break;
 
-        case 'next':
-          self.navigateToEntity('next');
-          break;
+          case 'next':
+            self.navigateToEntity('next');
+            break;
 
         }
       });
@@ -1849,14 +1849,14 @@ var Pontoon = (function (my) {
       });
 
       // Close zoomed screenshot
-      $('body').on('click', '#overlay', function() {
-        $(this).fadeOut('fast', function() {
+      $('body').on('click', '#overlay', function () {
+        $(this).fadeOut('fast', function () {
           $(this).remove();
         });
       });
 
       // Load Resource
-      $('body').on('click', '#metadata a.resource-path', function(e) {
+      $('body').on('click', '#metadata a.resource-path', function (e) {
         e.preventDefault();
         self.jumpToPart($(this).html());
       });
@@ -1889,11 +1889,11 @@ var Pontoon = (function (my) {
         tab.addClass('active');
 
         var entity = self.getEditorEntity(),
-            i = tab.index(),
-            original = entity['original' + self.getPluralSuffix()],
-            marked = entity['marked' + self.getPluralSuffix()],
-            title = !self.getPluralSuffix() ? 'Singular' : 'Plural',
-            source = entity.translation[i].string;
+          i = tab.index(),
+          original = entity['original' + self.getPluralSuffix()],
+          marked = entity['marked' + self.getPluralSuffix()],
+          title = !self.getPluralSuffix() ? 'Singular' : 'Plural',
+          source = entity.translation[i].string;
 
         $('#source-pane h2').html(title).show();
         $('#original').html(marked);
@@ -1918,7 +1918,7 @@ var Pontoon = (function (my) {
 
         // Only if actually clicked on tab
         if (e.hasOwnProperty('originalEvent')) {
-          self.checkUnsavedChanges(function() {
+          self.checkUnsavedChanges(function () {
             switchToPluralForm(tab);
           });
         } else {
@@ -1955,7 +1955,7 @@ var Pontoon = (function (my) {
           if ($('.warning-overlay').is(':visible')) {
             $('.warning-overlay .cancel').click();
           } else if (!self.app.advanced) {
-            self.checkUnsavedChanges(function() {
+            self.checkUnsavedChanges(function () {
               self.stopInPlaceEditing();
               self.goBackToEntityList();
             });
@@ -2003,7 +2003,7 @@ var Pontoon = (function (my) {
           }
 
           var section = $('#helpers section:visible'),
-              index = section.find('li.suggestion.hover').index() + 1;
+            index = section.find('li.suggestion.hover').index() + 1;
 
           // If no suggestions present, quit early
           if (!section.find('li.suggestion').length) {
@@ -2033,9 +2033,9 @@ var Pontoon = (function (my) {
         .on('keydown', 'textarea', editorShortcutsHandler)
         // Update length (keydown is triggered too early)
         .unbind("input propertychange").bind("input propertychange", function () {
-            self.updateCurrentTranslationLength();
-            self.updateInPlaceTranslation();
-            $('.warning-overlay:visible .cancel').click();
+          self.updateCurrentTranslationLength();
+          self.updateInPlaceTranslation();
+          $('.warning-overlay:visible .cancel').click();
         });
 
       // Close warning box
@@ -2044,12 +2044,12 @@ var Pontoon = (function (my) {
 
         $('.warning-overlay')
           .find('ul').empty().end()
-        .hide();
+          .hide();
 
         $('#translation').focus();
       });
 
-      $('#leave-anyway').click(function() {
+      $('#leave-anyway').click(function () {
         var callback = self.checkUnsavedChangesCallback;
         if (callback) {
           self.restoreInPlaceTranslation(); // Before callback, so that entity is available!
@@ -2068,8 +2068,8 @@ var Pontoon = (function (my) {
         }
 
         var entity = self.getEditorEntity(),
-            original = entity['original' + self.getPluralSuffix()],
-            source = self.fluent.getSourceStringValue(entity, original);
+          original = entity['original' + self.getPluralSuffix()],
+          source = self.fluent.getSourceStringValue(entity, original);
 
         self.updateAndFocusTranslationEditor(source);
         self.moveCursorToBeginning();
@@ -2088,7 +2088,7 @@ var Pontoon = (function (my) {
             string: ''
           });
 
-        // Standard Editor
+          // Standard Editor
         } else {
           self.updateAndFocusTranslationEditor('');
           self.moveCursorToBeginning();
@@ -2158,7 +2158,7 @@ var Pontoon = (function (my) {
             });
           }
 
-        // Standard Editor
+          // Standard Editor
         } else {
           self.updateAndFocusTranslationEditor(source);
           self.moveCursorToBeginning();
@@ -2174,7 +2174,7 @@ var Pontoon = (function (my) {
         $(this).parents('li').click();
 
         var entity = self.getEditorEntity(),
-            translation = $('#translation').val();
+          translation = $('#translation').val();
 
         // Mark that user approved translation instead of submitting it
         self.isApprovedNotSubmitted = true;
@@ -2192,7 +2192,7 @@ var Pontoon = (function (my) {
           csrfmiddlewaretoken: $('#server').data('csrf'),
           translation: translationId,
           paths: self.getPartPaths(self.currentPart)
-        }).then(function(data) {
+        }).then(function (data) {
           self.stats = data.stats;
           self.updateTranslation(entity, pf, data.translation);
 
@@ -2200,7 +2200,7 @@ var Pontoon = (function (my) {
           if (self.fluent.isFTLEditorEnabled()) {
             self.fluent.renderEditor(data.translation);
 
-          // Standard Editor
+            // Standard Editor
           } else {
             self.updateAndFocusTranslationEditor(data.translation.string);
             self.updateCachedTranslation();
@@ -2223,7 +2223,7 @@ var Pontoon = (function (my) {
           }));
 
           self.endLoader('Translation unapproved');
-        }, function() {
+        }, function () {
           self.endLoader("Couldn't unapprove this translation.");
         });
       });
@@ -2243,7 +2243,7 @@ var Pontoon = (function (my) {
             translation: $(this).parents('li').data('id'),
             paths: self.getPartPaths(self.currentPart)
           },
-          success: function(data) {
+          success: function (data) {
             self.stats = data.stats;
             self.updateTranslation(entity, pf, data.translation);
 
@@ -2257,7 +2257,7 @@ var Pontoon = (function (my) {
 
             self.endLoader('Translation rejected');
           },
-          error: function() {
+          error: function () {
             self.endLoader('Oops, something went wrong.', 'error');
           }
         });
@@ -2274,7 +2274,7 @@ var Pontoon = (function (my) {
           csrfmiddlewaretoken: $('#server').data('csrf'),
           translation: translationId,
           paths: self.getPartPaths(self.currentPart)
-        }).then(function(data) {
+        }).then(function (data) {
           self.stats = data.stats;
           self.updateTranslation(entity, pf, data.translation);
 
@@ -2282,7 +2282,7 @@ var Pontoon = (function (my) {
           if (self.fluent.isFTLEditorEnabled()) {
             self.fluent.renderEditor(data.translation);
 
-          // Standard Editor
+            // Standard Editor
           } else {
             self.updateAndFocusTranslationEditor(data.translation.string);
             self.updateCachedTranslation();
@@ -2305,7 +2305,7 @@ var Pontoon = (function (my) {
           }));
 
           self.endLoader('Translation unrejected');
-        }, function() {
+        }, function () {
           self.endLoader("Couldn't unreject this translation.");
         });
       });
@@ -2321,10 +2321,10 @@ var Pontoon = (function (my) {
             csrfmiddlewaretoken: $('#server').data('csrf'),
             translation: $(this).parents('li').data('id'),
           },
-          success: function() {
+          success: function () {
             button.parents('li')
               .addClass('delete')
-              .bind('transitionend', function() {
+              .bind('transitionend', function () {
                 $(this).remove();
 
                 self.endLoader('Translation deleted');
@@ -2335,7 +2335,7 @@ var Pontoon = (function (my) {
                 if (count === 0) {
                   $('#helpers .history ul').append(
                     '<li class="disabled">' +
-                      '<p>No translations available.</p>' +
+                    '<p>No translations available.</p>' +
                     '</li>'
                   );
                 }
@@ -2346,7 +2346,7 @@ var Pontoon = (function (my) {
                   .html(count);
               });
           },
-          error: function() {
+          error: function () {
             self.endLoader('Oops, something went wrong.', 'error');
           }
         });
@@ -2376,10 +2376,10 @@ var Pontoon = (function (my) {
       self.selectedEntities = [];
       self.openBatchEditor(true);
 
-      this.getEntities({pk_only: true}).then(function(data) {
+      this.getEntities({ pk_only: true }).then(function (data) {
         var locallySelectedEntities = self.getEntitiesIds('#entitylist .entity:visible.selected'),
-            mergedEntities = data.entity_pks.concat(locallySelectedEntities),
-            uniqueEntities = self.removeDuplicates(mergedEntities);
+          mergedEntities = data.entity_pks.concat(locallySelectedEntities),
+          uniqueEntities = self.removeDuplicates(mergedEntities);
 
         self.selectedEntities = uniqueEntities;
         self.openBatchEditor();
@@ -2412,14 +2412,14 @@ var Pontoon = (function (my) {
       });
 
       // Actions
-      $('#approve-all, #reject-all, #replace-all').click(function(e) {
+      $('#approve-all, #reject-all, #replace-all').click(function (e) {
         e.preventDefault();
 
         var button = this,
-            action = $(this).attr('id').split('-')[0],
-            find = encodeURIComponent($('#batch .find').val()),
-            replace = encodeURIComponent($('#batch .replace').val()),
-            message = '';
+          action = $(this).attr('id').split('-')[0],
+          find = encodeURIComponent($('#batch .find').val()),
+          replace = encodeURIComponent($('#batch .replace').val()),
+          message = '';
 
         // Disable before request complete
         if ($(button).is('.loading')) {
@@ -2454,7 +2454,7 @@ var Pontoon = (function (my) {
 
         $(button).addClass('loading');
 
-        self.waitForAttribute('selectedEntities').then(function() {
+        self.waitForAttribute('selectedEntities').then(function () {
           $.ajax({
             url: '/batch-edit-translations/',
             type: 'POST',
@@ -2466,7 +2466,7 @@ var Pontoon = (function (my) {
               find: find,
               replace: replace
             },
-            success: function(data) {
+            success: function (data) {
               if ('count' in data) {
                 var itemsText = data.count === 1 ? 'string' : 'strings';
                 var actionText = action + 'd';
@@ -2487,18 +2487,18 @@ var Pontoon = (function (my) {
                 // Update UI (entity list, progress, in-place)
                 if (data.count > 0) {
                   var checkedEntities = self.getEntitiesIds('#entitylist .entity.selected');
-                  self.getEntities({entity_ids: checkedEntities.join(',')}).then(function(entitiesData) {
+                  self.getEntities({ entity_ids: checkedEntities.join(',') }).then(function (entitiesData) {
                     self.stats = entitiesData.stats;
                     self.updateFilterUI();
 
                     var entitiesMap = {};
-                    $.each(entitiesData.entities, function() {
+                    $.each(entitiesData.entities, function () {
                       entitiesMap[this.pk] = this;
                     });
 
-                    $('#entitylist .entity.selected').each(function() {
+                    $('#entitylist .entity.selected').each(function () {
                       var entity = this.entity,
-                          updatedEntity = self.getEntityById(entity.pk, entitiesData.entities);
+                        updatedEntity = self.getEntityById(entity.pk, entitiesData.entities);
 
                       if (updatedEntity) {
                         entity.translation = updatedEntity.translation;
@@ -2521,23 +2521,23 @@ var Pontoon = (function (my) {
                   });
                 }
 
-              // Empty translations produced by replace might not be always allowed
+                // Empty translations produced by replace might not be always allowed
               } else if (data.error) {
                 message = data.error;
                 $('#batch .replace').focus();
               }
             },
-            error: function() {
+            error: function () {
               message = 'Oops, something went wrong';
             },
-            complete: function() {
+            complete: function () {
               $(button)
                 .toggleClass('loading')
                 .addClass('show-message')
                 .find('.message').html(message);
 
               // Reset button
-              self.batchButttonTimer = setTimeout(function() {
+              self.batchButttonTimer = setTimeout(function () {
                 $(button).removeClass('show-message');
               }, 3000);
             }
@@ -2565,26 +2565,26 @@ var Pontoon = (function (my) {
      */
     updateProgress: function (entity) {
       var self = this,
-          stats = self.stats,
-          total = stats.total,
-          fuzzy = stats.fuzzy,
-          warnings = stats.warnings,
-          errors = stats.errors,
-          translated = stats.approved,
-          unreviewed = stats.unreviewed,
-          missing = total - fuzzy - warnings - errors - translated,
-          fraction = {
-            translated: total ? translated / total : 0,
-            fuzzy: total ? fuzzy / total : 0,
-            warnings: total ? warnings / total : 0,
-            errors: total ? errors / total : 0,
-            missing: total ? missing / total : 0
-          },
-          number = Math.floor((fraction.translated + fraction.warnings) * 100),
-          translatedOld = parseInt($('#progress .menu .details .translated p').html().replace(/,/g, ''));
+        stats = self.stats,
+        total = stats.total,
+        fuzzy = stats.fuzzy,
+        warnings = stats.warnings,
+        errors = stats.errors,
+        translated = stats.approved,
+        unreviewed = stats.unreviewed,
+        missing = total - fuzzy - warnings - errors - translated,
+        fraction = {
+          translated: total ? translated / total : 0,
+          fuzzy: total ? fuzzy / total : 0,
+          warnings: total ? warnings / total : 0,
+          errors: total ? errors / total : 0,
+          missing: total ? missing / total : 0
+        },
+        number = Math.floor((fraction.translated + fraction.warnings) * 100),
+        translatedOld = parseInt($('#progress .menu .details .translated p').html().replace(/,/g, ''));
 
       // Update graph
-      $('#progress .graph').each(function() {
+      $('#progress .graph').each(function () {
         var context = this.getContext('2d');
         var dpr = window.devicePixelRatio || 1;
 
@@ -2592,15 +2592,15 @@ var Pontoon = (function (my) {
         context.clearRect(0, 0, this.width, this.height);
         context.lineWidth = 3 * dpr;
 
-        var x = this.width/2,
-            y = this.height/2,
-            radius = (this.width - context.lineWidth)/2,
-            end = null;
+        var x = this.width / 2,
+          y = this.height / 2,
+          radius = (this.width - context.lineWidth) / 2,
+          end = null;
 
-        $('#progress .details > div').each(function() {
+        $('#progress .details > div').each(function () {
           var type = $(this).attr('class'),
-              length = fraction[type] * 2,
-              start = (end !== null) ? end : -0.5;
+            length = fraction[type] * 2,
+            start = (end !== null) ? end : -0.5;
           end = start + length;
 
           context.beginPath();
@@ -2618,29 +2618,29 @@ var Pontoon = (function (my) {
         .find('header span.all').html(self.numberWithCommas(total)).end()
         .find('header span.unreviewed').html(self.numberWithCommas(unreviewed)).end()
         .find('.details')
-          .find('.translated p').html(self.numberWithCommas(translated)).end()
-          .find('.fuzzy p').html(self.numberWithCommas(fuzzy)).end()
-          .find('.warnings p').html(self.numberWithCommas(warnings)).end()
-          .find('.errors p').html(self.numberWithCommas(errors)).end()
-          .find('.missing p').html(self.numberWithCommas(missing));
+        .find('.translated p').html(self.numberWithCommas(translated)).end()
+        .find('.fuzzy p').html(self.numberWithCommas(fuzzy)).end()
+        .find('.warnings p').html(self.numberWithCommas(warnings)).end()
+        .find('.errors p').html(self.numberWithCommas(errors)).end()
+        .find('.missing p').html(self.numberWithCommas(missing));
 
       // Update filter
       $('#filter .menu')
-          .find('.all .count').html(self.numberWithCommas(total)).end()
-          .find('.missing .count').html(self.numberWithCommas(missing)).end()
-          .find('.fuzzy .count').html(self.numberWithCommas(fuzzy)).end()
-          .find('.warnings .count').html(self.numberWithCommas(warnings)).end()
-          .find('.errors .count').html(self.numberWithCommas(errors)).end()
-          .find('.translated .count').html(self.numberWithCommas(translated)).end()
-          .find('.unreviewed .count').html(self.numberWithCommas(unreviewed));
+        .find('.all .count').html(self.numberWithCommas(total)).end()
+        .find('.missing .count').html(self.numberWithCommas(missing)).end()
+        .find('.fuzzy .count').html(self.numberWithCommas(fuzzy)).end()
+        .find('.warnings .count').html(self.numberWithCommas(warnings)).end()
+        .find('.errors .count').html(self.numberWithCommas(errors)).end()
+        .find('.translated .count').html(self.numberWithCommas(translated)).end()
+        .find('.unreviewed .count').html(self.numberWithCommas(unreviewed));
 
       // Update parts menu
       if (entity && total) {
         var paths = [],
-            parts = $('.project .menu .name[data-slug=' + self.project.slug + ']')
-                      .data('parts')[self.locale.code];
+          parts = $('.project .menu .name[data-slug=' + self.project.slug + ']')
+            .data('parts')[self.locale.code];
 
-        $(parts).each(function() {
+        $(parts).each(function () {
           paths = self.getPartPaths(this);
 
           if (paths.indexOf(entity.path) !== -1) {
@@ -2675,7 +2675,7 @@ var Pontoon = (function (my) {
         .addClass(status)
         .toggleClass('has-translations', translation.pk !== null && !translation.rejected)
         .find('.translation-string')
-          .html(translationString);
+        .html(translationString);
 
       self.updateProgress(entity);
     },
@@ -2701,16 +2701,16 @@ var Pontoon = (function (my) {
     /*
      * Update all translations in localStorage on server
      */
-    syncLocalStorageOnServer: function() {
-      if (! (localStorage instanceof Storage) || localStorage.length === 0) {
+    syncLocalStorageOnServer: function () {
+      if (!(localStorage instanceof Storage) || localStorage.length === 0) {
         return;
       }
 
       var len = this.entities.length;
       for (var i = 0; i < len; i++) {
         var entity = this.entities[i],
-            key = this.getLocalStorageKey(entity),
-            value = localStorage[key];
+          key = this.getLocalStorageKey(entity),
+          value = localStorage[key];
         if (value) {
           value = JSON.parse(localStorage[key]);
           this.updateOnServer(entity, value.translation, false);
@@ -2728,7 +2728,7 @@ var Pontoon = (function (my) {
      *
      * entity Entity
      */
-    getLocalStorageKey: function(entity) {
+    getLocalStorageKey: function (entity) {
       return this.locale.code + "/" + entity.pk;
     },
 
@@ -2739,7 +2739,7 @@ var Pontoon = (function (my) {
      * entity Entity
      * translation Translation
      */
-    addToLocalStorage: function(entity, translation) {
+    addToLocalStorage: function (entity, translation) {
       localStorage.setItem(this.getLocalStorageKey(entity), JSON.stringify({
         translation: translation,
       }));
@@ -2752,12 +2752,12 @@ var Pontoon = (function (my) {
      * type 'error' or 'warning'
      * failedChecks Array of errors or warnings
      */
-    showFailedCheckType: function(type, failedChecks) {
-      $(failedChecks).each(function() {
+    showFailedCheckType: function (type, failedChecks) {
+      $(failedChecks).each(function () {
         $('#quality ul').append(
           '<li class="' + type + '">' +
-            '<i class="fa fa-times-circle"></i>' +
-            this +
+          '<i class="fa fa-times-circle"></i>' +
+          this +
           '</li>'
         );
       });
@@ -2770,7 +2770,7 @@ var Pontoon = (function (my) {
      * failedChecks Array of errors or warnings
      * messageOnly If true, only show message (without Save/Suggest buttons)
      */
-    renderFailedChecks: function(failedChecks, messageOnly) {
+    renderFailedChecks: function (failedChecks, messageOnly) {
       if (messageOnly) {
         $('#save-anyway').hide();
       }
@@ -2794,6 +2794,10 @@ var Pontoon = (function (my) {
 
       if (failedChecks.clWarnings) {
         this.showFailedCheckType('warning', failedChecks.clWarnings);
+      }
+
+      if (failedChecks.pWarnings) {
+        this.showFailedCheckType('warning', failedChecks.pWarnings);
       }
 
       if (failedChecks.ttWarnings) {
@@ -2820,7 +2824,7 @@ var Pontoon = (function (my) {
      *
      * translation Translation to show failed checks for
      */
-    toggleFailedChecks: function(translation) {
+    toggleFailedChecks: function (translation) {
       var failedChecks = {};
 
       if (this.isFailedCheckStatus(translation, 'errors')) {
@@ -2846,14 +2850,14 @@ var Pontoon = (function (my) {
      */
     updateOnServer: function (entity, translation, syncLocalStorage) {
       var self = this,
-          pluralForm = self.getPluralForm();
+        pluralForm = self.getPluralForm();
 
       function goToNextTranslation() {
         // Quit
         if (!$('#editor:visible').is('.opened')) {
           return;
 
-        // Go to next plural form
+          // Go to next plural form
         } else if (pluralForm !== -1 && $("#editor").is('.opened')) {
           var next = $('#plural-tabs li:visible')
             .eq(pluralForm + 1).find('a');
@@ -2864,7 +2868,7 @@ var Pontoon = (function (my) {
             next.click();
           }
 
-        // Go to next entity
+          // Go to next entity
         } else {
           self.navigateToEntity('next');
         }
@@ -2879,7 +2883,7 @@ var Pontoon = (function (my) {
           if (self.isApprovedNotSubmitted) {
             $('#helpers .history [data-id="' + data.translation.pk + '"] button.approve')
               .parents('li').addClass('approved')
-                .siblings().removeClass('approved');
+              .siblings().removeClass('approved');
           }
 
           var pf = self.getPluralForm(true);
@@ -2944,14 +2948,14 @@ var Pontoon = (function (my) {
           paths: self.getPartPaths(self.currentPart),
           force_suggestions: self.user.forceSuggestions
         },
-        success: function(data) {
+        success: function (data) {
           renderTranslation(data);
           // Connection exists -> sync localStorage
           if (syncLocalStorage) {
             self.syncLocalStorageOnServer();
           }
         },
-        error: function(error) {
+        error: function (error) {
           // Skip if other request in progress
           if (self.XHRupdateOnServer && self.XHRupdateOnServer.statusText === 'abort') {
             return;
@@ -2975,7 +2979,7 @@ var Pontoon = (function (my) {
             self.isApprovedNotSubmitted = null;
           }
         },
-        complete: function() {
+        complete: function () {
           self.XHRupdateOnServer = null;
           self.reattachSaveButtonHandler();
         }
@@ -2995,8 +2999,8 @@ var Pontoon = (function (my) {
       $('.part .selector')
         .attr('title', title)
         .find('.title')
-          // Only show filename instead of full path
-          .html(title.replace(/^.*[/]/, ''));
+        // Only show filename instead of full path
+        .html(title.replace(/^.*[/]/, ''));
     },
 
 
@@ -3005,9 +3009,9 @@ var Pontoon = (function (my) {
      */
     updateFormFields: function (form) {
       var self = this,
-          slug = self.project.slug,
-          code = self.locale.code,
-          part = self.part;
+        slug = self.project.slug,
+        code = self.locale.code,
+        part = self.part;
 
       // Use first part when translating All Resources
       if (part === 'all-resources') {
@@ -3027,8 +3031,8 @@ var Pontoon = (function (my) {
      */
     updateGoButton: function () {
       var toggle = this.getSelectedLocale() !== this.locale.code ||
-                   this.getSelectedProject() !== this.project.slug ||
-                   this.getSelectedPart() !== this.currentPart.title;
+        this.getSelectedProject() !== this.project.slug ||
+        this.getSelectedPart() !== this.currentPart.title;
       $('#go').toggleClass('active', toggle);
     },
 
@@ -3038,7 +3042,7 @@ var Pontoon = (function (my) {
      */
     updateProjectMenu: function () {
       var projects = this.getLocaleData('projects'),
-          slug = this.getProjectData('slug');
+        slug = this.getProjectData('slug');
 
       // Fallback if selected project not available for the selected locale
       if (projects.indexOf(slug) === -1) {
@@ -3065,10 +3069,10 @@ var Pontoon = (function (my) {
      */
     updatePartMenu: function () {
       var locale = this.getSelectedLocale(),
-          project = this.getSelectedProject(),
-          parts = this.getProjectData('parts')[locale],
-          currentPart = this.getSelectedPart(),
-          part = $.grep(parts, function (e) { return e.title === currentPart; });
+        project = this.getSelectedProject(),
+        parts = this.getProjectData('parts')[locale],
+        currentPart = this.getSelectedPart(),
+        part = $.grep(parts, function (e) { return e.title === currentPart; });
 
       // Fallback if selected part not available for the selected locale & project
       if (!part.length) {
@@ -3130,20 +3134,20 @@ var Pontoon = (function (my) {
       // Locale menu handler
       $('.locale .menu li:not(".no-match")').click(function () {
         var menuItem = $(this),
-            locale = menuItem.find('.language').data('code'),
-            language = menuItem.find('.language').html();
+          locale = menuItem.find('.language').data('code'),
+          language = menuItem.find('.language').html();
 
         $('.locale .selector')
           .find('.language')
-            .html(language)
-            .data('code', locale)
+          .html(language)
+          .data('code', locale)
           .end()
           .find('.code').html(locale);
 
         if (!self.getLocaleData('projects')) {
           $.ajax({
             url: '/teams/' + locale + '/projects/',
-            success: function(projects) {
+            success: function (projects) {
               menuItem.find('.language').data('projects', projects);
               self.updateProjectMenu();
             }
@@ -3157,7 +3161,7 @@ var Pontoon = (function (my) {
       // Show only projects available for the selected locale
       $('.project .selector').click(function () {
         var projects = Pontoon.getLocaleData('projects'),
-            $menu = $(this).parents('.select').find('.menu');
+          $menu = $(this).parents('.select').find('.menu');
 
         // Hide all projects
         $menu.find('li')
@@ -3165,21 +3169,21 @@ var Pontoon = (function (my) {
           .toggle(false);
 
         // Show requested projects
-        $(projects).each(function() {
+        $(projects).each(function () {
           $menu
-              .find('.name[data-slug="' + this + '"]')
+            .find('.name[data-slug="' + this + '"]')
             .parent()
-              .toggleClass('limited', true)
-              .toggle(true);
+            .toggleClass('limited', true)
+            .toggle(true);
         });
       });
 
       // Project menu handler
       $('.project .menu li:not(".no-match"), .static-links .all-projects').click(function () {
         var project = $(this).find('.name'),
-            name = project.html(),
-            slug = project.data('slug'),
-            locale = self.getSelectedLocale();
+          name = project.html(),
+          slug = project.data('slug'),
+          locale = self.getSelectedLocale();
 
         // Select project
         if (!$('.project .menu .search-wrapper > a').is('.back:visible')) {
@@ -3202,7 +3206,7 @@ var Pontoon = (function (my) {
 
             $.ajax({
               url: url,
-              success: function(parts) {
+              success: function (parts) {
                 if (projectParts) {
                   projectParts[locale] = parts;
                 } else {
@@ -3220,16 +3224,16 @@ var Pontoon = (function (my) {
       // Show only parts available for the selected project
       $('.part .selector').click(function () {
         var locale = self.getSelectedLocale(),
-            parts = self.getProjectData('parts')[locale],
-            menu = $(this).siblings('.menu').find('ul'),
-            currentProject = self.getProjectData('slug') === self.project.slug,
-            currentLocale = self.getLocaleData('code') === self.locale.code;
+          parts = self.getProjectData('parts')[locale],
+          menu = $(this).siblings('.menu').find('ul'),
+          currentProject = self.getProjectData('slug') === self.project.slug,
+          currentLocale = self.getLocaleData('code') === self.locale.code;
 
         menu.find('li:not(".no-match")').remove();
-        $(parts).each(function(i) {
+        $(parts).each(function (i) {
           var cls = '',
-              title = this.title,
-              percent = '0%';
+            title = this.title,
+            percent = '0%';
 
           if (currentProject && currentLocale && self.part === title) {
             cls = ' class="current"';
@@ -3243,7 +3247,7 @@ var Pontoon = (function (my) {
             menu.append('<li' + cls + '>' +
               '<span>' + title + '</span>' +
               '<span>' + percent + '</span>' +
-            '</li>');
+              '</li>');
 
           } else {
             menu.parents('.menu').find('.static-links')
@@ -3269,17 +3273,17 @@ var Pontoon = (function (my) {
       });
 
       // File upload
-      $('#id_uploadfile').change(function() {
+      $('#id_uploadfile').change(function () {
         self.updateFormFields($('form#upload-file'));
         $('form#upload-file').submit();
       });
 
       // Focus & unfocus iframe to make history (back/forward) work
-      $('#source, #iframe-cover').hover(function() {
+      $('#source, #iframe-cover').hover(function () {
         if (self.isIframeHoverIntentional()) {
           $('#source').click();
         }
-      }, function() {
+      }, function () {
         if (self.isIframeHoverIntentional()) {
           $('body').click();
         }
@@ -3290,7 +3294,7 @@ var Pontoon = (function (my) {
     /*
      * Removes all previously loaded entities and allows to load new ones
      */
-    cleanupEntities: function() {
+    cleanupEntities: function () {
       this.entities = [];
       $('#entitylist .entity').remove();
       this.setNotOnPage();
@@ -3302,29 +3306,29 @@ var Pontoon = (function (my) {
      */
     updateAuthors: function (authors) {
       var self = this,
-          $forAuthors = $('#filter').find('.for-authors').toggle(authors.length > 0);
+        $forAuthors = $('#filter').find('.for-authors').toggle(authors.length > 0);
 
-      var selectedAuthors = $('#filter .menu li.author.selected').map(function() {
+      var selectedAuthors = $('#filter .menu li.author.selected').map(function () {
         return $.trim($(this).data("type"));
       }).get();
 
       $('#filter .menu li.author').remove();
 
-      $.each(authors, function() {
+      $.each(authors, function () {
         var selected = (selectedAuthors.includes(this.email)) ? ' selected' : '';
         $forAuthors.after('<li class="author' + selected + '" data-type="' + this.email + '">' +
           '<figure>' +
-            '<span class="sel">' +
-              '<span class="status fa"></span>' +
-              '<img class="rounded" src="' + this.gravatar_url + '">' +
-            '</span>' +
-            '<figcaption>' +
-              '<p class="name">' + this.display_name + '</p>' +
-              '<p class="role">' + this.role + '</p>' +
-            '</figcaption>' +
-            '<span class="count">' + self.numberWithCommas(this.translation_count) + '</span>' +
+          '<span class="sel">' +
+          '<span class="status fa"></span>' +
+          '<img class="rounded" src="' + this.gravatar_url + '">' +
+          '</span>' +
+          '<figcaption>' +
+          '<p class="name">' + this.display_name + '</p>' +
+          '<p class="role">' + this.role + '</p>' +
+          '</figcaption>' +
+          '<span class="count">' + self.numberWithCommas(this.translation_count) + '</span>' +
           '</figure>' +
-        '</li>');
+          '</li>');
       });
     },
 
@@ -3332,11 +3336,11 @@ var Pontoon = (function (my) {
     /*
      * Update tag list in filter menu
      */
-    updateTagFilters: function() {
+    updateTagFilters: function () {
       var tags = this.project.tags;
       $('#filter .menu li[class^="tag-"]').remove();
 
-      tags.forEach(function(tag) {
+      tags.forEach(function (tag) {
         var priority = '';
 
         // In order to avoid possible XSS attacks these variables can't be rendered as HTML,
@@ -3344,15 +3348,15 @@ var Pontoon = (function (my) {
         var name = Pontoon.doNotRender(tag.name);
         var slug = Pontoon.doNotRender(tag.slug);
 
-        for (var i=0; i<5; i++) {
+        for (var i = 0; i < 5; i++) {
           priority += '<span class="fa fa-star' + (i < tag.priority ? ' active' : '') + '"></span>';
         }
 
         $('#filter .menu li.for-tags, #filter .menu li[class^="tag-"]').last().after(
-          '<li class="tag-' + slug +'" data-type="' + slug + '">' +
-            '<span class="status fa"></span>' +
-            '<span class="title">' + name + '</span>' +
-            '<span class="priority">' + priority + '</span>' +
+          '<li class="tag-' + slug + '" data-type="' + slug + '">' +
+          '<span class="status fa"></span>' +
+          '<span class="title">' + name + '</span>' +
+          '<span class="priority">' + priority + '</span>' +
           '</li>'
         );
       });
@@ -3365,7 +3369,7 @@ var Pontoon = (function (my) {
     /*
      * Reset Time range filter to default
      */
-    resetTimeRange: function() {
+    resetTimeRange: function () {
       $('#filter .time-range input').removeClass('error');
 
       if ($('#filter .horizontal-separator .edit').is('.editing')) {
@@ -3407,7 +3411,7 @@ var Pontoon = (function (my) {
      */
     updateProfileMenu: function () {
       var code = this.locale.code,
-          slug = this.project.slug;
+        slug = this.project.slug;
 
       $('#profile .admin-current-project a')
         .attr('href', '/admin/projects/' + slug + '/')
@@ -3468,7 +3472,7 @@ var Pontoon = (function (my) {
     /*
      * Reset entity list and editor width
      */
-    resetColumnsWidth: function() {
+    resetColumnsWidth: function () {
       $('#entitylist, #editor').css('width', '');
     },
 
@@ -3476,7 +3480,7 @@ var Pontoon = (function (my) {
     /*
      * Show/hide elements needed for in place localization
      */
-    toggleInplaceElements: function() {
+    toggleInplaceElements: function () {
       var inplaceElements = $('#source, #iframe-cover, #drag, #not-on-page').addClass('hidden').hide();
 
       if (this.project.win) {
@@ -3488,7 +3492,7 @@ var Pontoon = (function (my) {
     /*
      * Open first entity in the entity list in the editor
      */
-    openFirstEntity: function() {
+    openFirstEntity: function () {
       $('#entitylist .entity:first').mouseover().click();
     },
 
@@ -3496,7 +3500,7 @@ var Pontoon = (function (my) {
     /*
      * Opens entity with the given id.
      */
-    openEntity: function(entityId) {
+    openEntity: function (entityId) {
       $('#entitylist .entity[data-entry-pk=' + entityId + ']').mouseover().click();
     },
 
@@ -3532,12 +3536,12 @@ var Pontoon = (function (my) {
     /*
      * Render default UI
      */
-    showDefaultView: function() {
+    showDefaultView: function () {
       // If 2-column layout opened by default, open first entity in the editor
       if (this.app.advanced) {
         this.openFirstEntity();
 
-      // If not and editor opened, show entity list
+        // If not and editor opened, show entity list
       } else if ($("#editor").is('.opened')) {
         this.goBackToEntityList();
       }
@@ -3547,10 +3551,10 @@ var Pontoon = (function (my) {
     /*
      * Render UI based on application state
      */
-    renderState: function() {
+    renderState: function () {
       var filter = this.state.filter,
-          search = this.state.search,
-          entity = this.state.entity;
+        search = this.state.search,
+        entity = this.state.entity;
 
       // No optional state parameters
       if (!filter.status && !filter.extra && !filter.time && !filter.author && !search && !entity) {
@@ -3609,9 +3613,9 @@ var Pontoon = (function (my) {
       otherWindow = otherWindow || Pontoon.project.win;
       targetOrigin = targetOrigin || Pontoon.project.url;
       var message = {
-            type: messageType,
-            value: messageValue
-          };
+        type: messageType,
+        value: messageValue
+      };
 
       otherWindow.postMessage(JSON.stringify(message), targetOrigin);
     },
@@ -3632,9 +3636,9 @@ var Pontoon = (function (my) {
     /*
      * Waits until Pontoon object attribute set.
      */
-    waitForAttribute: function(propery, times, mainDeferred) {
+    waitForAttribute: function (propery, times, mainDeferred) {
       var self = this,
-          d = mainDeferred || $.Deferred();
+        d = mainDeferred || $.Deferred();
       // How many times should we check entities before displaying an error.
       times = typeof times === 'undefined' ? 100 : times;
 
@@ -3646,7 +3650,7 @@ var Pontoon = (function (my) {
       if (Pontoon[propery] && Pontoon[propery].length) {
         d.resolve();
       } else {
-        setTimeout(function() {
+        setTimeout(function () {
           self.waitForAttribute(propery, times - 1, d);
         }, 100);
       }
@@ -3666,95 +3670,95 @@ var Pontoon = (function (my) {
 
         switch (message.type) {
 
-        case "READY":
-          clearInterval(Pontoon.interval);
+          case "READY":
+            clearInterval(Pontoon.interval);
 
-          var advanced = false,
+            var advanced = false,
               websiteWidth = Pontoon.getProjectWidth();
 
-          if (websiteWidth) {
-            var windowWidth = $(window).width(),
+            if (websiteWidth) {
+              var windowWidth = $(window).width(),
                 sidebarWidth = windowWidth - websiteWidth;
 
-            if (sidebarWidth >= 700) {
-              advanced = true;
-              $('#sidebar').addClass('advanced').width(sidebarWidth);
-              $('#editor').addClass('opened');
+              if (sidebarWidth >= 700) {
+                advanced = true;
+                $('#sidebar').addClass('advanced').width(sidebarWidth);
+                $('#editor').addClass('opened');
+
+              } else {
+                $('#sidebar').width(sidebarWidth);
+                $('#editor').css('left', sidebarWidth);
+              }
+              Pontoon.setNotOnPage();
 
             } else {
-              $('#sidebar').width(sidebarWidth);
-              $('#editor').css('left', sidebarWidth);
+              $('#sidebar').removeClass('advanced').css('width', '350px');
             }
-            Pontoon.setNotOnPage();
 
-          } else {
-            $('#sidebar').removeClass('advanced').css('width', '350px');
-          }
+            $('#source, #iframe-cover').css('margin-left', $('#sidebar').width() || 0);
+            $('#source').show();
 
-          $('#source, #iframe-cover').css('margin-left', $('#sidebar').width() || 0);
-          $('#source').show();
+            Pontoon.ready = true;
+            Pontoon.resizeIframe();
+            Pontoon.makeIframeResizable();
 
-          Pontoon.ready = true;
-          Pontoon.resizeIframe();
-          Pontoon.makeIframeResizable();
+            Pontoon.createObject(advanced, $('#source')[0].contentWindow);
 
-          Pontoon.createObject(advanced, $('#source')[0].contentWindow);
+            Pontoon.waitForAttribute('entities').then(function () {
+              // Deep copy: http://api.jquery.com/jQuery.extend
+              // Avoid circular structure, which is unable to convert to JSON
+              var entities = $.extend(true, [], Pontoon.entities);
+              $(entities).each(function () {
+                delete this.ui;
+              });
 
-          Pontoon.waitForAttribute('entities').then(function() {
+              Pontoon.postMessage("INITIALIZE", {
+                path: Pontoon.app.path,
+                links: Pontoon.project.links,
+                entities: entities,
+                slug: Pontoon.project.slug,
+                locale: Pontoon.locale,
+                user: Pontoon.user
+              }, null, $('#source').attr('src'));
+            }, $.proxy(Pontoon.noEntitiesError, Pontoon));
+            break;
+
+          case "DATA":
             // Deep copy: http://api.jquery.com/jQuery.extend
-            // Avoid circular structure, which is unable to convert to JSON
-            var entities = $.extend(true, [], Pontoon.entities);
-            $(entities).each(function () {
-              delete this.ui;
+            Pontoon.waitForAttribute('entities').then(function () {
+              Pontoon.entities = $.extend(
+                true,
+                Pontoon.entities,
+                message.value.entities);
             });
+            break;
 
-            Pontoon.postMessage("INITIALIZE", {
-              path: Pontoon.app.path,
-              links: Pontoon.project.links,
-              entities: entities,
-              slug: Pontoon.project.slug,
-              locale: Pontoon.locale,
-              user: Pontoon.user
-            }, null, $('#source').attr('src'));
-          }, $.proxy(Pontoon.noEntitiesError, Pontoon));
-          break;
+          case "RENDER":
+            var value = message.value;
+            Pontoon.project.url = value.url;
+            Pontoon.project.title = value.title;
+            Pontoon.createUI();
+            Pontoon.syncLocalStorageOnServer();
+            break;
 
-        case "DATA":
-          // Deep copy: http://api.jquery.com/jQuery.extend
-          Pontoon.waitForAttribute('entities').then(function() {
-            Pontoon.entities = $.extend(
-              true,
-              Pontoon.entities,
-              message.value.entities);
-          });
-          break;
+          case "HOVER":
+            Pontoon.entities[message.value].ui.addClass('hovered');
+            break;
 
-        case "RENDER":
-          var value = message.value;
-          Pontoon.project.url = value.url;
-          Pontoon.project.title = value.title;
-          Pontoon.createUI();
-          Pontoon.syncLocalStorageOnServer();
-          break;
+          case "UNHOVER":
+            Pontoon.entities[message.value].ui.removeClass('hovered');
+            break;
 
-        case "HOVER":
-          Pontoon.entities[message.value].ui.addClass('hovered');
-          break;
+          case "ACTIVE":
+            var entity = Pontoon.entities[message.value];
+            Pontoon.openEditor(entity);
+            break;
 
-        case "UNHOVER":
-          Pontoon.entities[message.value].ui.removeClass('hovered');
-          break;
-
-        case "ACTIVE":
-          var entity = Pontoon.entities[message.value];
-          Pontoon.openEditor(entity);
-          break;
-
-        case "INACTIVE":
-          if (!Pontoon.app.advanced && $("#editor").is('.opened')) {
-            Pontoon.goBackToEntityList();
-          }
-          break;
+          case "INACTIVE":
+            if (!Pontoon.app.advanced && $("#editor").is('.opened')) {
+              Pontoon.goBackToEntityList();
+            }
+            break;
 
         }
       }
@@ -3764,7 +3768,7 @@ var Pontoon = (function (my) {
     /*
      * Make iFrame resizable
      */
-    makeIframeResizable: function() {
+    makeIframeResizable: function () {
       function mouseUpHandler(e) {
         $(document)
           .unbind('mousemove', mouseMoveHandler)
@@ -3776,7 +3780,7 @@ var Pontoon = (function (my) {
         $('#sidebar:not(".batch") #editor:not(".opened")').css('left', $('#sidebar').width()).show();
 
         var initial = e.data.initial,
-            advanced = Pontoon.app.advanced;
+          advanced = Pontoon.app.advanced;
         if (initial.advanced !== advanced) {
 
           // On switch to 2-column layout, populate editor if empty
@@ -3785,7 +3789,7 @@ var Pontoon = (function (my) {
               Pontoon.openFirstEntity();
             }
 
-          // On switch to 1-column layout, open editor if needed
+            // On switch to 1-column layout, open editor if needed
           } else {
             if ($('#entitylist .entity.hovered').length) {
               Pontoon.openEditor(Pontoon.getEditorEntity());
@@ -3796,8 +3800,8 @@ var Pontoon = (function (my) {
 
       function mouseMoveHandler(e) {
         var initial = e.data.initial,
-            left = Math.min(Math.max(initial.leftWidth + (e.pageX - initial.position), initial.leftMin), initial.leftMax),
-            right = Math.min(Math.max(initial.rightWidth - (e.pageX - initial.position), 0), initial.leftMax - initial.leftMin);
+          left = Math.min(Math.max(initial.leftWidth + (e.pageX - initial.position), initial.leftMin), initial.leftMax),
+          right = Math.min(Math.max(initial.rightWidth - (e.pageX - initial.position), 0), initial.leftMax - initial.leftMin);
 
         initial.left.width(left);
         initial.right.width(right).css('margin-left', left);
@@ -3813,7 +3817,7 @@ var Pontoon = (function (my) {
               .show();
           }
 
-        // Sidebar resized below 2-column breakpoint
+          // Sidebar resized below 2-column breakpoint
         } else {
           if (Pontoon.app.advanced) {
             Pontoon.app.advanced = false;
@@ -3841,17 +3845,17 @@ var Pontoon = (function (my) {
         Pontoon.dragging = true;
 
         var left = $('#sidebar'),
-            right = $('#source'),
-            data = {
-              left: left,
-              right: right,
-              leftWidth: left.width(),
-              rightWidth: right.width(),
-              leftMin: 350,
-              leftMax: $(window).width(),
-              position: e.pageX,
-              advanced: Pontoon.app.advanced
-            };
+          right = $('#source'),
+          data = {
+            left: left,
+            right: right,
+            leftWidth: left.width(),
+            rightWidth: right.width(),
+            leftMin: 350,
+            leftMax: $(window).width(),
+            position: e.pageX,
+            advanced: Pontoon.app.advanced
+          };
 
         $('#iframe-cover').show().width(right.width()); // iframe fix
         $('#sidebar:not(".batch") #editor:not(".opened")').hide();
@@ -3909,14 +3913,14 @@ var Pontoon = (function (my) {
     /*
      * Load project with in place translation support
      */
-    withInPlace: function() {
+    withInPlace: function () {
       var self = this,
-          i = 0;
+        i = 0;
 
       self.interval = 0;
 
       // If no READY received for 10 seconds
-      self.interval = setInterval(function() {
+      self.interval = setInterval(function () {
         i++;
         if (i > 100 && !self.ready) {
           clearInterval(self.interval);
@@ -3938,7 +3942,7 @@ var Pontoon = (function (my) {
     /*
      * Load project without in place translation support
      */
-    withoutInPlace: function() {
+    withoutInPlace: function () {
       var self = this;
       $('#sidebar').addClass('advanced').css('width', '100%');
       $('#entitylist').css('left', '');
@@ -3964,14 +3968,14 @@ var Pontoon = (function (my) {
     /*
      * Manipulates the loading overlay
      */
-    setMainLoading: function(enabled) {
+    setMainLoading: function (enabled) {
       clearTimeout(this.mainLoadingTimer);
       $('#project-load').toggle(enabled).find('.text').css('opacity', 0);
 
       // Show potentially amusing message if loading takes more time
       if (enabled) {
-        this.mainLoadingTimer = setTimeout(function() {
-          $('#project-load .text').animate({opacity: 1});
+        this.mainLoadingTimer = setTimeout(function () {
+          $('#project-load .text').animate({ opacity: 1 });
         }, 3000);
       }
     },
@@ -3980,7 +3984,7 @@ var Pontoon = (function (my) {
     /*
      * Tells if current project requires Inplace Editor
      */
-    requiresInplaceEditor: function() {
+    requiresInplaceEditor: function () {
       var part = this.currentPart;
       return part && part.url;
     },
@@ -3989,7 +3993,7 @@ var Pontoon = (function (my) {
     /*
      * Get paths for the selected part
      */
-    getPartPaths: function(part) {
+    getPartPaths: function (part) {
       var paths = part.resource__path;
       if (paths.constructor === Array) {
         return paths;
@@ -4002,23 +4006,23 @@ var Pontoon = (function (my) {
     /*
      * Load entities, store data, prepare UI
      */
-    getEntities: function(opts) {
+    getEntities: function (opts) {
       opts = opts || {};
       var self = this,
-          state = self.state,
-          params = {
-            'project': state.project,
-            'locale': state.locale,
-            'paths': self.getPartPaths(self.currentPart),
-            'search': self.getSearch(),
-            'tag': self.getFilter('tag').join(','),
-            'status': self.getFilter('status').join(','),
-            'extra': self.getFilter('extra').join(','),
-            'time': self.getFilter('time'),
-            'author': self.getFilter('author').join(','),
-            'inplace_editor': self.requiresInplaceEditor()
-          },
-          deferred = $.Deferred();
+        state = self.state,
+        params = {
+          'project': state.project,
+          'locale': state.locale,
+          'paths': self.getPartPaths(self.currentPart),
+          'search': self.getSearch(),
+          'tag': self.getFilter('tag').join(','),
+          'status': self.getFilter('status').join(','),
+          'extra': self.getFilter('extra').join(','),
+          'time': self.getFilter('time'),
+          'author': self.getFilter('author').join(','),
+          'inplace_editor': self.requiresInplaceEditor()
+        },
+        deferred = $.Deferred();
 
       if (self.XHRgetEntities) {
         self.XHRgetEntities.abort();
@@ -4030,10 +4034,10 @@ var Pontoon = (function (my) {
         type: 'POST',
         url: '/get-entities/',
         data: params,
-        success: function(data) {
+        success: function (data) {
           deferred.resolve(data, data.has_next);
         },
-        error: function(data, text) {
+        error: function (data, text) {
           deferred.reject(text);
         }
       });
@@ -4045,7 +4049,7 @@ var Pontoon = (function (my) {
     /*
      * Process entities if returned, considering in place support
      */
-    processEntities: function(entitiesData, hasNext) {
+    processEntities: function (entitiesData, hasNext) {
       var self = this;
 
       self.stats = entitiesData.stats;
@@ -4085,7 +4089,7 @@ var Pontoon = (function (my) {
     /*
      * Displays an error if unable to get entities
      */
-    noEntitiesError: function() {
+    noEntitiesError: function () {
       // Do not show an error if other request in progress
       if (this.XHRgetEntities && this.XHRgetEntities.statusText === 'abort') {
         return;
@@ -4094,17 +4098,17 @@ var Pontoon = (function (my) {
       $('#project-load')
         .find('.animation').hide().end()
         .find('.text')
-          .html('Oops, something went wrong.')
-          .animate({opacity: 1});
+        .html('Oops, something went wrong.')
+        .animate({ opacity: 1 });
     },
 
 
     /*
      * Request entities and website for selected part
      */
-    initializePart: function(forceReloadIframe) {
+    initializePart: function (forceReloadIframe) {
       var self = this,
-          entitiesOpts = {};
+        entitiesOpts = {};
 
       self.cleanupEntities();
       this.clearSelection();
@@ -4117,7 +4121,7 @@ var Pontoon = (function (my) {
       }
 
       self.getEntities(entitiesOpts)
-          .then($.proxy(self.processEntities, self), $.proxy(self.noEntitiesError, self));
+        .then($.proxy(self.processEntities, self), $.proxy(self.noEntitiesError, self));
 
       if (self.requiresInplaceEditor()) {
         var url = self.currentPart.url;
@@ -4130,7 +4134,7 @@ var Pontoon = (function (my) {
     },
 
 
-    setSidebarLoading: function(state) {
+    setSidebarLoading: function (state) {
       $('#entitylist .loading').toggle(state);
       if (state) {
         $('#entitylist .no-match').hide();
@@ -4138,24 +4142,24 @@ var Pontoon = (function (my) {
     },
 
 
-    setNoMatch: function(noMatch) {
+    setNoMatch: function (noMatch) {
       $('#entitylist .no-match').toggle(noMatch);
       $('#sidebar').toggleClass('no', noMatch);
     },
 
 
-    isLoading: function() {
+    isLoading: function () {
       return $('#entitylist .loading').css('display') === 'block';
     },
 
 
-    hasVisibleEntities: function() {
+    hasVisibleEntities: function () {
       return $('#entitylist li:visible').length > 0;
     },
 
 
-    getEntitiesIds: function(selector) {
-      return $.map($(selector || '#entitylist .entity:visible'), function(item) {
+    getEntitiesIds: function (selector) {
+      return $.map($(selector || '#entitylist .entity:visible'), function (item) {
         return $(item).data('entry-pk');
       });
     },
@@ -4164,10 +4168,10 @@ var Pontoon = (function (my) {
     /*
      * Returns an entity object with given id
      */
-    getEntityById: function(entityId, entities) {
+    getEntityById: function (entityId, entities) {
       entities = entities || this.entities;
 
-      return entities.find(function(entity) {
+      return entities.find(function (entity) {
         return entity.pk === parseInt(entityId);
       });
     },
@@ -4176,12 +4180,12 @@ var Pontoon = (function (my) {
     /*
      * Returns currently opened entity object
      */
-    getEditorEntity: function() {
+    getEditorEntity: function () {
       var $editor = $('#editor'),
-          $sidebar = $('#sidebar');
+        $sidebar = $('#sidebar');
 
       if ((this.requiresInplaceEditor() && !$editor.is('.opened') && this.project.url) ||
-          (!this.requiresInplaceEditor() && $sidebar.is('.no'))) {
+        (!this.requiresInplaceEditor() && $sidebar.is('.no'))) {
         return;
       }
 
@@ -4189,7 +4193,7 @@ var Pontoon = (function (my) {
     },
 
 
-    getEditorEntityPk: function() {
+    getEditorEntityPk: function () {
       var entity = this.getEditorEntity();
 
       if (entity) {
@@ -4198,13 +4202,13 @@ var Pontoon = (function (my) {
     },
 
 
-    isEditorEntityAvailable: function() {
+    isEditorEntityAvailable: function () {
       var availableEntityIds = this.getEntitiesIds();
 
       return availableEntityIds.indexOf(this.getEditorEntityPk()) > -1;
     },
 
-    highlightQuery: function(item) {
+    highlightQuery: function (item) {
       var searchQuery = this.getSearch();
       item = item || $('#entitylist .source-string, #entitylist .translation-string');
 
@@ -4219,15 +4223,15 @@ var Pontoon = (function (my) {
           return;
         }
         var i = queries.length;
-        while(i--) {
+        while (i--) {
           queries[i] = queries[i].replace(/^["]|["]$/g, '');
           queries[i] = queries[i].replace(reg, '"');
         }
         // sort array in decreasing order of string length
-        queries.sort(function(a,b) {
+        queries.sort(function (a, b) {
           return b.length - a.length;
         });
-        queries.forEach(function(query) {
+        queries.forEach(function (query) {
           item.mark(query, {
             acrossElements: true,
             caseSensitive: false,
@@ -4238,15 +4242,15 @@ var Pontoon = (function (my) {
       }
     },
 
-    loadNextEntities: function(type) {
+    loadNextEntities: function (type) {
       var self = this,
-          requiresInplaceEditor = self.requiresInplaceEditor(),
-          // Join IDs into string due to bug 1344322
-          excludeEntities = requiresInplaceEditor ? {} : {exclude_entities: self.getEntitiesIds('#entitylist .entity').join(',')};
+        requiresInplaceEditor = self.requiresInplaceEditor(),
+        // Join IDs into string due to bug 1344322
+        excludeEntities = requiresInplaceEditor ? {} : { exclude_entities: self.getEntitiesIds('#entitylist .entity').join(',') };
 
       self.setSidebarLoading(true);
 
-      self.getEntities(excludeEntities).then(function(entitiesData, hasNext) {
+      self.getEntities(excludeEntities).then(function (entitiesData, hasNext) {
         self.entities = self.entities.concat(entitiesData.entities);
         self.hasNext = hasNext;
 
@@ -4264,7 +4268,7 @@ var Pontoon = (function (my) {
           });
         }
 
-        if(!hasNext && !self.hasVisibleEntities()) {
+        if (!hasNext && !self.hasVisibleEntities()) {
           self.setNoMatch(true);
         } else {
           self.setNoMatch(false);
@@ -4282,7 +4286,7 @@ var Pontoon = (function (my) {
           }
         }
         self.pushState();
-      }).always(function() {
+      }).always(function () {
         // Skip if other request in progress
         if (self.XHRgetEntities && self.XHRgetEntities.statusText === 'abort') {
           return;
@@ -4295,7 +4299,7 @@ var Pontoon = (function (my) {
     /*
      * Get currently selected locale code
      */
-    getSelectedLocale: function() {
+    getSelectedLocale: function () {
       return $('.locale .selector .language').data('code');
     },
 
@@ -4303,7 +4307,7 @@ var Pontoon = (function (my) {
     /*
      * Get currently selected project slug
      */
-    getSelectedProject: function() {
+    getSelectedProject: function () {
       return $('.project .button .title').data('slug');
     },
 
@@ -4311,7 +4315,7 @@ var Pontoon = (function (my) {
     /*
      * Get currently selected part name
      */
-    getSelectedPart: function() {
+    getSelectedPart: function () {
       var part = $('.part .selector').attr('title');
       if (part === 'All Resources') {
         part = 'all-resources';
@@ -4323,7 +4327,7 @@ var Pontoon = (function (my) {
     /*
      * Get data-* attribute value of the currently selected locale
      */
-    getLocaleData: function(attribute) {
+    getLocaleData: function (attribute) {
       var code = this.getSelectedLocale();
       return $('.locale .menu li .language[data-code=' + code + ']').data(attribute);
     },
@@ -4332,7 +4336,7 @@ var Pontoon = (function (my) {
     /*
      * Get data-* attribute value of the currently selected project
      */
-    getProjectData: function(attribute) {
+    getProjectData: function (attribute) {
       var slug = this.getSelectedProject();
       return $('.project .menu .name[data-slug=' + slug + ']').data(attribute);
     },
@@ -4343,13 +4347,13 @@ var Pontoon = (function (my) {
      *
      * title Part title
      */
-    updateCurrentPart: function() {
+    updateCurrentPart: function () {
       var locale = this.getSelectedLocale(),
-          part = this.getSelectedPart(),
-          availableParts = this.getProjectData('parts')[locale],
-          matchingParts = $.grep(availableParts, function (e) {
-            return e.title === part;
-          });
+        part = this.getSelectedPart(),
+        availableParts = this.getProjectData('parts')[locale],
+        matchingParts = $.grep(availableParts, function (e) {
+          return e.title === part;
+        });
 
       if (!matchingParts.length) {
         this.currentPart = availableParts[0];
@@ -4364,9 +4368,9 @@ var Pontoon = (function (my) {
     /*
      * Update title of the current view.
      */
-    updateTitle: function() {
+    updateTitle: function () {
       var project = this.getProjectData(),
-          locale = this.getLocaleData();
+        locale = this.getLocaleData();
 
       document.title = project.name + ' · ' + locale.name + ' (' + locale.code + ')';
     },
@@ -4375,11 +4379,11 @@ var Pontoon = (function (my) {
     /*
      * Updates Pontoon and history state, and the URL
      */
-    pushState: function(state) {
+    pushState: function (state) {
       state = state || this.getState();
       var self = this,
-          url = '/' + state.locale + '/' + state.project + '/' + state.paths + '/',
-          queryParams = {};
+        url = '/' + state.locale + '/' + state.project + '/' + state.paths + '/',
+        queryParams = {};
 
       self.state = state;
 
@@ -4429,11 +4433,11 @@ var Pontoon = (function (my) {
     /*
      * Get value from the querystring
      */
-    getQueryParam: function(name) {
+    getQueryParam: function (name) {
       name = name.replace(/[[\]]/g, "\\$&");
       var url = window.location.href,
-          regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)", "i"),
-          results = regex.exec(url);
+        regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)", "i"),
+        results = regex.exec(url);
 
       if (!results || !results[2]) {
         return null;
@@ -4444,7 +4448,7 @@ var Pontoon = (function (my) {
       try {
         return decodeURIComponent(encodedURI);
 
-      // If querystring not encoded, we need to encode it first
+        // If querystring not encoded, we need to encode it first
       } catch (e) {
         if (e instanceof URIError) {
           encodedURI = encodeURIComponent(encodedURI);
@@ -4459,7 +4463,7 @@ var Pontoon = (function (my) {
      *
      * type If 'selected', get selected main menu state (instead of currently translated)
      */
-    getState: function(type) {
+    getState: function (type) {
       return {
         project: type === 'selected' ? this.getSelectedProject() : this.project.slug,
         locale: type === 'selected' ? this.getSelectedLocale() : this.locale.code,
@@ -4474,7 +4478,7 @@ var Pontoon = (function (my) {
     /*
      * Update initial Pontoon state from the URL
      */
-    updateInitialState: function() {
+    updateInitialState: function () {
       var state = this.getState('selected');
       state.filter = {
         status: this.getQueryParam('status') ? this.getQueryParam('status').split(',') : [],
@@ -4493,7 +4497,7 @@ var Pontoon = (function (my) {
 
       // Fallback to first available part if no matches found (mistyped URL)
       var requestedPaths = this.getSelectedPart(),
-          paths = requestedPaths;
+        paths = requestedPaths;
       this.updateCurrentPart(requestedPaths);
       paths = this.currentPart.title;
 
@@ -4509,8 +4513,8 @@ var Pontoon = (function (my) {
     /*
      * Set up canvas to be HiDPI display ready
      */
-    setUpCanvas: function() {
-      $('#progress .graph').each(function() {
+    setUpCanvas: function () {
+      $('#progress .graph').each(function () {
         var dpr = window.devicePixelRatio || 1;
         this.style.width = this.width + 'px';
         this.style.height = this.height + 'px';
@@ -4522,7 +4526,7 @@ var Pontoon = (function (my) {
 }(Pontoon || {}));
 
 /* Main code */
-window.onpopstate = function(e) {
+window.onpopstate = function (e) {
   if (e.state) {
     // Update main menu
     $('.project .menu .name[data-slug="' + e.state.project + '"]').parent().click();
@@ -4550,14 +4554,14 @@ Pontoon.user = {
   forceSuggestions: $('#server').data('force-suggestions') === 'True' ? true : false,
   manager: $('#server').data('manager'),
   localesOrder: $('#server').data('locales-order') || {},
-  canTranslate: function() {
+  canTranslate: function () {
     var managedLocales = $("#server").data("user-managed-locales") || [];
     var translatedLocales = $("#server").data("user-translated-locales") || [];
     var translatedProjects = $("#server").data("user-translated-projects") || {};
     var locale = Pontoon.getLocaleData();
     var project = {
-        slug: Pontoon.getProjectData("slug")
-      };
+      slug: Pontoon.getProjectData("slug")
+    };
 
     if (Pontoon.getEditorEntity()) {
       project = Pontoon.getEditorEntity().project;
