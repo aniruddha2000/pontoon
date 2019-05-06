@@ -125,14 +125,15 @@ class VCSProject(object):
         (changed_files, removed_files)
         """
         source_resources_repo = self.db_project.source_repository
-
-        if not source_resources_repo:
-            raise MissingSourceRepository(self.db_project)
-
         source_directory = self.source_directory_path
         last_revision = source_resources_repo.get_last_synced_revisions()
 
-        modified_files, removed_files = get_changed_files(
+        if not source_resources_repo:
+            removed_files = get_changed_files(
+                source_resources_repo.type, source_directory, last_revision
+            )
+
+        modified_files = get_changed_files(
             source_resources_repo.type, source_directory, last_revision
         )
 
